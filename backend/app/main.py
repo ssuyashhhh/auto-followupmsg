@@ -37,7 +37,10 @@ _origins = [
     "http://127.0.0.1:3000",
 ]
 if settings.frontend_url:
-    _origins.append(settings.frontend_url)
+    # Strip trailing slash to avoid mismatch
+    _origins.append(settings.frontend_url.rstrip("/"))
+
+logger.info("CORS allowed origins: %s", _origins)
 
 app.add_middleware(
     CORSMiddleware,
