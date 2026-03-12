@@ -1,0 +1,39 @@
+# Render Blueprint — defines all services for one-click deploy
+# https://render.com/docs/blueprint-spec
+#
+# Free tier: one web service runs API + Celery worker + beat in a single container.
+# Background Workers require a paid plan, so everything is bundled via start.sh.
+
+services:
+  - type: web
+    name: auto-followups-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false  # Supabase connection string
+      - key: REDIS_URL
+        sync: false  # Upstash rediss:// URL
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SUPABASE_BUCKET
+        value: uploads
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: DEFAULT_AI_MODEL
+        value: gpt-4o-mini
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "false"
+      - key: FRONTEND_URL
+        sync: false  # Your Vercel URL, for CORS
+    healthCheckPath: /health
+      - key: SECRET_KEY
+        sync: false
