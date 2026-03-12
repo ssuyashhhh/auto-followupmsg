@@ -144,25 +144,30 @@ auto follow ups/
 
 1. Go to [console.upstash.com](https://console.upstash.com) and create a Redis database
 2. Select the **free** tier, pick the closest region
-3. Copy the **redis:// endpoint** (with password) → this is your `REDIS_URL`
-   - Format: `redis://default:[password]@[endpoint].upstash.io:6379`
+3. Copy the **rediss:// endpoint** (with password, TLS) → this is your `REDIS_URL`
+   - Format: `rediss://default:[password]@[endpoint].upstash.io:6379`
+   - The app auto-enables TLS when it detects `rediss://`
 
-### Step 3: Render — Backend + Worker
+### Step 3: Render — Backend (API + Worker + Beat in one service)
+
+> **Note:** Render free tier only includes Web Services — Background Workers require a paid plan.
+> The app bundles uvicorn + Celery worker + beat into a single container via `start.sh`.
 
 1. Go to [render.com](https://render.com) and connect your GitHub repo
 2. **Option A — Blueprint (recommended):**
    - Dashboard → **Blueprints** → **New Blueprint Instance**
-   - Select your repo → Render reads `render.yaml` and creates both services
-   - Fill in env vars in the dashboard for each service
+   - Select your repo → Render reads `render.yaml` and creates the service
+   - Fill in env vars in the dashboard
 3. **Option B — Manual:**
-   - **Web Service:** New → Web Service → Docker → Root: `./backend` → Dockerfile: `./backend/Dockerfile`
-   - **Worker:** New → Background Worker → Docker → Root: `./backend` → Dockerfile: `./backend/Dockerfile`
-   - Worker start command: `celery -A app.tasks.celery_app worker --loglevel=info --concurrency=2`
-4. **Set environment variables** on both services:
+   - New → **Web Service** → Docker
+   - Root Directory: `./backend`
+   - Dockerfile Path: `./backend/Dockerfile`
+   - Plan: **Free**
+4. **Set environment variables:**
    | Variable | Value |
    |---|---|
    | `DATABASE_URL` | Supabase connection string (from Step 1) |
-   | `REDIS_URL` | Upstash Redis URL (from Step 2) |
+   | `REDIS_URL` | Upstash `rediss://` URL (from Step 2) |
    | `SUPABASE_URL` | `https://[ref].supabase.co` |
    | `SUPABASE_KEY` | Supabase anon key |
    | `OPENAI_API_KEY` | Your OpenAI key |
@@ -185,13 +190,21 @@ auto follow ups/
 
 ### Post-Deployment Checklist
 
-- [ ] Supabase DB created, connection string copied
-- [ ] Supabase `uploads` bucket created
-- [ ] Upstash Redis created, URL copied
-- [ ] Render web service running, health check passes (`/health`)
-- [ ] Render worker running
+- [ ] Supabase DB created, connection string copied (use `postgresql+asyncpg://` prefix)
+- [ ] Supabase `uploads` bucket created (private)
+- [ ] Upstash Redis created, `rediss://` URL copied
+- [ ] Render web service deployed, health check passes (`/health`)
 - [ ] `alembic upgrade head` executed on Render Shell
 - [ ] Vercel frontend deployed
-- [ ] `FRONTEND_URL` set on Render (CORS)
-- [ ] `NEXT_PUBLIC_API_URL` set on Vercel
-- [ ] Register first user via frontend → `/register`
+- [ ] `FRONTEND_URL` set on Render → your Vercel URL
+- [ ] `NEXT_PUBLIC_API_URL` set on Vercel → your Render URL + `/api/v1`
+- [ ] Register first user at `https://your-app.vercel.app/register`
+
+### Free Tier Limits
+
+| Service | Free Tier Limit |
+|---|---|
+| Supabase | 500 MB DB, 1 GB storage, 50K monthly active users |
+| Upstash | 10K commands/day, 256 MB storage |
+| Render | 750 hrs/month, spins down after 15 min inactivity |
+| Vercel | 100 GB bandwidth, 6000 min build/month |
