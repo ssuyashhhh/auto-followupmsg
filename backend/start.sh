@@ -4,9 +4,6 @@
 
 set -e
 
-echo "Running database migrations..."
-alembic upgrade head
-
 echo "Starting Celery worker..."
 celery -A app.tasks.celery_app worker \
   --loglevel=info \
