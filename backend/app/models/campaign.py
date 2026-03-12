@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy import DateTime, Enum, ForeignKey, Integer, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -21,6 +21,7 @@ class Campaign(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str | None] = mapped_column(Text)
     status: Mapped[CampaignStatus] = mapped_column(
+        Enum(CampaignStatus, values_callable=lambda e: [x.value for x in e], name="campaignstatus", create_type=False),
         default=CampaignStatus.DRAFT, nullable=False, index=True
     )
     total_contacts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)

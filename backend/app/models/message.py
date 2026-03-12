@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, String, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -25,6 +25,7 @@ class Message(Base):
         UUID(as_uuid=True), ForeignKey("campaigns.id", ondelete="CASCADE"), nullable=False, index=True
     )
     message_type: Mapped[MessageType] = mapped_column(
+        Enum(MessageType, values_callable=lambda e: [x.value for x in e], name="messagetype", create_type=False),
         default=MessageType.COLD_OUTREACH, nullable=False, index=True
     )
     content: Mapped[str] = mapped_column(Text, nullable=False)
@@ -32,6 +33,7 @@ class Message(Base):
     version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     status: Mapped[MessageStatus] = mapped_column(
+        Enum(MessageStatus, values_callable=lambda e: [x.value for x in e], name="messagestatus", create_type=False),
         default=MessageStatus.GENERATED, nullable=False, index=True
     )
     ai_model: Mapped[str] = mapped_column(String(100), nullable=False)

@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -32,6 +32,7 @@ class Contact(Base):
     notes: Mapped[str | None] = mapped_column(Text)
     raw_data: Mapped[dict | None] = mapped_column(JSONB)
     status: Mapped[ContactStatus] = mapped_column(
+        Enum(ContactStatus, values_callable=lambda e: [x.value for x in e], name="contactstatus", create_type=False),
         default=ContactStatus.NEW, nullable=False, index=True
     )
     created_at: Mapped[datetime] = mapped_column(

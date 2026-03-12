@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy import BigInteger, DateTime, Enum, ForeignKey, Integer, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -29,6 +29,7 @@ class Upload(Base):
     parsed_count: Mapped[int] = mapped_column(Integer, default=0)
     failed_count: Mapped[int] = mapped_column(Integer, default=0)
     status: Mapped[UploadStatus] = mapped_column(
+        Enum(UploadStatus, values_callable=lambda e: [x.value for x in e], name="uploadstatus", create_type=False),
         default=UploadStatus.PENDING, nullable=False, index=True
     )
     error_message: Mapped[str | None] = mapped_column(Text)

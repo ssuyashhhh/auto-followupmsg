@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -19,7 +19,10 @@ class PromptTemplate(Base):
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    message_type: Mapped[MessageType] = mapped_column(nullable=False, index=True)
+    message_type: Mapped[MessageType] = mapped_column(
+        Enum(MessageType, values_callable=lambda e: [x.value for x in e], name="messagetype", create_type=False),
+        nullable=False, index=True
+    )
     system_prompt: Mapped[str] = mapped_column(Text, nullable=False)
     user_prompt: Mapped[str] = mapped_column(Text, nullable=False)
     is_default: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
