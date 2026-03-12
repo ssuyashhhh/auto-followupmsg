@@ -39,7 +39,8 @@ export default function LoginPage() {
       await login(data.email, data.password);
       router.push("/dashboard");
     } catch (err: any) {
-      toast.error(err.response?.data?.detail || "Login failed");
+      const detail = err.response?.data?.detail;
+      toast.error(typeof detail === "string" ? detail : "Login failed");
     } finally {
       setIsLoading(false);
     }

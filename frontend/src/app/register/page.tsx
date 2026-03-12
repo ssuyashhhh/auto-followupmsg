@@ -53,7 +53,8 @@ export default function RegisterPage() {
       toast.success("Account created! Please sign in.");
       router.push("/login");
     } catch (err: any) {
-      toast.error(err.response?.data?.detail || "Registration failed");
+      const detail = err.response?.data?.detail;
+      toast.error(typeof detail === "string" ? detail : "Registration failed");
     } finally {
       setIsLoading(false);
     }
