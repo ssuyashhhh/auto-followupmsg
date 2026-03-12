@@ -37,8 +37,9 @@ _origins = [
     "http://127.0.0.1:3000",
 ]
 if settings.frontend_url:
-    # Strip trailing slash to avoid mismatch
-    _origins.append(settings.frontend_url.rstrip("/"))
+    # Support comma-separated URLs for multiple Vercel deployments
+    for url in settings.frontend_url.split(","):
+        _origins.append(url.strip().rstrip("/"))
 
 logger.info("CORS allowed origins: %s", _origins)
 
