@@ -71,7 +71,13 @@ app.include_router(tasks.router, prefix=f"{settings.api_prefix}/tasks", tags=["T
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.exception("Unhandled error on %s %s", request.method, request.url.path)
+    origin = request.headers.get("origin", "")
+    headers = {}
+    if origin in _origins:
+        headers["access-control-allow-origin"] = origin
+        headers["access-control-allow-credentials"] = "true"
     return JSONResponse(
         status_code=500,
-        content={"detail": "Internal server error"},
+        content={"detail": f"Internal server error: {exc}"},
+        headers=headers,
     )
