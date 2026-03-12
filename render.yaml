@@ -37,5 +37,3 @@ services:
       - key: FRONTEND_URL
         sync: false  # Your Vercel URL, for CORS
     healthCheckPath: /health
-      - key: SECRET_KEY
-        sync: false
