@@ -14,6 +14,7 @@ from dataclasses import dataclass
 
 import anthropic
 import openai
+from groq import Groq
 
 from app.config import settings
 
@@ -48,6 +49,8 @@ class GenerationError:
 OPENAI_MODELS = {"gpt-4", "gpt-4-turbo", "gpt-4o", "gpt-4o-mini", "gpt-3.5-turbo"}
 CLAUDE_MODELS = {"claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307",
                  "claude-3-5-sonnet-20241022", "claude-3-5-haiku-20241022"}
+GROQ_MODELS = {"llama-3.3-70b-versatile", "llama-3.1-8b-instant", "llama-3.2-90b-vision-preview",
+               "mixtral-8x7b-32768", "gemma2-9b-it"}
 
 # Approximate cost per 1K tokens (input/output)
 COST_PER_1K = {
@@ -61,6 +64,12 @@ COST_PER_1K = {
     "claude-3-haiku-20240307": {"input": 0.00025, "output": 0.00125},
     "claude-3-5-sonnet-20241022": {"input": 0.003, "output": 0.015},
     "claude-3-5-haiku-20241022": {"input": 0.001, "output": 0.005},
+    # Groq models are free
+    "llama-3.3-70b-versatile": {"input": 0.0, "output": 0.0},
+    "llama-3.1-8b-instant": {"input": 0.0, "output": 0.0},
+    "llama-3.2-90b-vision-preview": {"input": 0.0, "output": 0.0},
+    "mixtral-8x7b-32768": {"input": 0.0, "output": 0.0},
+    "gemma2-9b-it": {"input": 0.0, "output": 0.0},
 }
 
 
@@ -78,6 +87,11 @@ def _is_openai_model(model: str) -> bool:
 def _is_claude_model(model: str) -> bool:
     """Check if model name belongs to Anthropic."""
     return model in CLAUDE_MODELS or model.startswith("claude-")
+
+
+def _is_groq_model(model: str) -> bool:
+    """Check if model name belongs to Groq."""
+    return model in GROQ_MODELS or model.startswith("llama-") or model.startswith("mixtral-") or model.startswith("gemma")
 
 
 def get_default_model() -> str:
@@ -206,6 +220,60 @@ def _generate_claude(
 
 
 # ============================================
+# Groq Provider (Free — Llama, Mixtral, Gemma)
+# ============================================
+
+def _generate_groq(
+    system_prompt: str,
+    user_prompt: str,
+    model: str,
+    max_tokens: int = 500,
+    temperature: float = 0.7,
+) -> GenerationResult | GenerationError:
+    """Generate message using Groq API (OpenAI-compatible)."""
+    client = Groq(api_key=settings.groq_api_key)
+
+    start_time = time.time()
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+        latency_ms = int((time.time() - start_time) * 1000)
+
+        content = response.choices[0].message.content or ""
+        usage = response.usage
+
+        input_tokens = usage.prompt_tokens if usage else 0
+        output_tokens = usage.completion_tokens if usage else 0
+
+        return GenerationResult(
+            content=content.strip(),
+            word_count=len(content.split()),
+            model=model,
+            metadata={
+                "provider": "groq",
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens,
+                "total_tokens": (usage.total_tokens if usage else 0),
+                "latency_ms": latency_ms,
+                "cost_usd": 0.0,  # Groq is free
+                "temperature": temperature,
+            },
+        )
+
+    except Exception as e:
+        logger.exception("Groq API error")
+        retryable = "rate" in str(e).lower() or "limit" in str(e).lower()
+        return GenerationError(error=str(e), model=model, retryable=retryable)
+
+
+# ============================================
 # Unified Generator
 # ============================================
 
@@ -240,10 +308,12 @@ def generate_message(
         return _generate_openai(system_prompt, user_prompt, model, max_tokens, temperature)
     elif _is_claude_model(model):
         return _generate_claude(system_prompt, user_prompt, model, max_tokens, temperature)
+    elif _is_groq_model(model):
+        return _generate_groq(system_prompt, user_prompt, model, max_tokens, temperature)
     else:
-        # Default to OpenAI for unknown models
-        logger.warning("Unknown model '%s', defaulting to OpenAI provider", model)
-        return _generate_openai(system_prompt, user_prompt, model, max_tokens, temperature)
+        # Default to Groq for unknown models (free)
+        logger.warning("Unknown model '%s', defaulting to Groq provider", model)
+        return _generate_groq(system_prompt, user_prompt, model, max_tokens, temperature)
 
 
 def generate_cold_message(

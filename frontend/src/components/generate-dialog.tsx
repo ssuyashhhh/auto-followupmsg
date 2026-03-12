@@ -37,6 +37,10 @@ const MESSAGE_TYPES = [
 ];
 
 const AI_MODELS = [
+  { value: "llama-3.3-70b-versatile", label: "Llama 3.3 70B (Free)" },
+  { value: "llama-3.1-8b-instant", label: "Llama 3.1 8B (Free)" },
+  { value: "mixtral-8x7b-32768", label: "Mixtral 8x7B (Free)" },
+  { value: "gemma2-9b-it", label: "Gemma 2 9B (Free)" },
   { value: "gpt-4o", label: "GPT-4o" },
   { value: "gpt-4o-mini", label: "GPT-4o Mini" },
   { value: "gpt-4-turbo", label: "GPT-4 Turbo" },
@@ -60,7 +64,7 @@ export function GenerateDialog({
   onOpenChange,
 }: GenerateDialogProps) {
   const [messageType, setMessageType] = useState("initial_outreach");
-  const [model, setModel] = useState("gpt-4o");
+  const [model, setModel] = useState("llama-3.3-70b-versatile");
   const [templateId, setTemplateId] = useState<string>("default");
   const [taskId, setTaskId] = useState<string | null>(null);
 

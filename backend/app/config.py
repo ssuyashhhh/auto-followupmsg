@@ -21,7 +21,8 @@ class Settings(BaseSettings):
     # AI
     openai_api_key: str = ""
     anthropic_api_key: str = ""
-    default_ai_model: str = "gpt-4"
+    groq_api_key: str = ""
+    default_ai_model: str = "llama-3.3-70b-versatile"
 
     # Frontend (for CORS)
     frontend_url: str = ""

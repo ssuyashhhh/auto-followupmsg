@@ -35,6 +35,7 @@ python-magic==0.4.27  # MIME detection (use python-magic-bin on Windows)
 # ============================================
 openai==1.58.1
 anthropic==0.42.0
+groq==0.15.0
 
 # ============================================
 # Task Queue
