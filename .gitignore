@@ -27,9 +27,15 @@ Thumbs.db
 node_modules/
 .next/
 out/
+next-env.d.ts
+tsconfig.tsbuildinfo
 
-# Docker
+# Docker (local dev only)
+docker-compose.yml
 *.log
+
+# Build artifacts
+.pytest_cache/
 
 # Database
 pgdata/
