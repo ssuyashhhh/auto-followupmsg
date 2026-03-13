@@ -18,6 +18,7 @@ venv/
 .idea/
 *.swp
 *.swo
+pyrightconfig.json
 
 # OS
 .DS_Store

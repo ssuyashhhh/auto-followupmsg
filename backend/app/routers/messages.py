@@ -117,8 +117,8 @@ async def generate_messages_bulk(
 
     if not contact_ids:
         raise HTTPException(
-            status_code=404,
-            detail="No eligible contacts found for this message type",
+            status_code=422,
+            detail="No eligible contacts found for this message type. Please upload contacts to the campaign first.",
         )
 
     # Dispatch Celery task
