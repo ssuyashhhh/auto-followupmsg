@@ -60,7 +60,30 @@ export default function CampaignDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = use(params);
+  let id: string | undefined;
+  let paramsError: any = null;
+  try {
+    ({ id } = use(params));
+  } catch (err) {
+    paramsError = err;
+  }
+
+  if (paramsError) {
+    if (paramsError?.response?.status === 401) {
+      return (
+        <div className="flex flex-col items-center justify-center py-12">
+          <div className="mb-4 text-lg font-semibold text-destructive">You are not authorized. Please log in.</div>
+          <a href="/login" className="inline-block rounded bg-primary px-4 py-2 text-white hover:bg-primary/80">Go to Login</a>
+        </div>
+      );
+    }
+    return <div>Error loading campaign: {String(paramsError?.message || paramsError)}</div>;
+  }
+
+  if (!id) {
+    return null;
+  }
+
   const router = useRouter();
   const { data: campaign, isLoading } = useCampaign(id);
   const { data: uploadsData } = useCampaignUploads(id);

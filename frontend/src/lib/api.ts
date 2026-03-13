@@ -18,15 +18,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 — redirect to login
+// Handle 401 globally: remove token, but do NOT redirect or propagate error object to Suspense/React.use
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 && typeof window !== "undefined") {
       localStorage.removeItem("token");
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
-      }
+      // Optionally, trigger a global auth state update here
+      // Do NOT redirect or throw error object to Suspense/React.use
+      // Instead, return a rejected Promise with a custom error message
+      return Promise.reject({
+        ...error,
+        isAuthError: true,
+        message: "Unauthorized. Please log in.",
+      });
     }
     return Promise.reject(error);
   }
