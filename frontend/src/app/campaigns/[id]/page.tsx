@@ -83,8 +83,9 @@ export default function CampaignDetailPage({
     try {
       await updateCampaign.mutateAsync({ id, status });
       toast.success(`Campaign ${status}`);
-    } catch {
-      toast.error("Failed to update status");
+    } catch (err: any) {
+      const detail = err?.response?.data?.detail;
+      toast.error(typeof detail === "string" ? detail : JSON.stringify(detail) || "Failed to update status");
     }
   };
 
@@ -93,8 +94,9 @@ export default function CampaignDetailPage({
       await deleteCampaign.mutateAsync(id);
       toast.success("Campaign deleted");
       router.push("/campaigns");
-    } catch {
-      toast.error("Failed to delete campaign");
+    } catch (err: any) {
+      const detail = err?.response?.data?.detail;
+      toast.error(typeof detail === "string" ? detail : JSON.stringify(detail) || "Failed to delete campaign");
     }
   };
 
