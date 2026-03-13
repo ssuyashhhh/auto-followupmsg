@@ -34,7 +34,8 @@ export function FileUploadZone({ campaignId }: { campaignId: string }) {
           await uploadFile.mutateAsync({ campaignId, file });
           toast.success(`Uploaded ${file.name}`);
         } catch (err: any) {
-          toast.error(err.response?.data?.detail || `Failed to upload ${file.name}`);
+          const detail = err.response?.data?.detail;
+          toast.error(typeof detail === "string" ? detail : JSON.stringify(detail) || `Failed to upload ${file.name}`);
         }
       }
     },

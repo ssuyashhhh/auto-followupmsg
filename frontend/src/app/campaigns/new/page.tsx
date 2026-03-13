@@ -39,7 +39,8 @@ export default function NewCampaignPage() {
       toast.success("Campaign created");
       router.push(`/campaigns/${campaign.id}`);
     } catch (err: any) {
-      toast.error(err.response?.data?.detail || "Failed to create campaign");
+      const detail = err.response?.data?.detail;
+      toast.error(typeof detail === "string" ? detail : JSON.stringify(detail) || "Failed to create campaign");
     }
   };
 
