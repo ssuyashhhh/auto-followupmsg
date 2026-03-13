@@ -23,6 +23,7 @@ _async_connect_args: dict = {}
 if _is_remote_db:
     _async_connect_args["ssl"] = "require"
     _async_connect_args["prepared_statement_cache_size"] = 0  # Required for Supabase pooler (PgBouncer)
+    _async_connect_args["statement_cache_size"] = 0  # Disable asyncpg's built-in LRU statement cache (PgBouncer compat)
 
 engine = create_async_engine(
     settings.database_url,
