@@ -65,8 +65,8 @@ export function MessagesPanel({ campaignId }: MessagesPanelProps) {
         message_type: msg.message_type,
       });
       toast.success(`Regenerating (Task: ${result.task_id.slice(0, 8)}...)`);
-    } catch {
-      toast.error("Failed to regenerate");
+    } catch (err) {
+      toast.error(`Failed to regenerate: ${typeof err === "object" ? JSON.stringify(err) : String(err)}`);
     }
   };
 

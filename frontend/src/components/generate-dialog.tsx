@@ -92,8 +92,8 @@ export function GenerateDialog({
       });
       setTaskId(result.task_id);
       toast.success(`Generation started for ${result.contact_count} contacts`);
-    } catch {
-      toast.error("Failed to start generation");
+    } catch (err) {
+      toast.error(`Failed to start generation: ${typeof err === "object" ? JSON.stringify(err) : String(err)}`);
     }
   };
 
