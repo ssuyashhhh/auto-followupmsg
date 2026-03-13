@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -58,32 +58,9 @@ const statusColor: Record<string, "default" | "success" | "warning" | "secondary
 export default function CampaignDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  let id: string | undefined;
-  let paramsError: any = null;
-  try {
-    ({ id } = use(params));
-  } catch (err) {
-    paramsError = err;
-  }
-
-  if (paramsError) {
-    if (paramsError?.response?.status === 401) {
-      return (
-        <div className="flex flex-col items-center justify-center py-12">
-          <div className="mb-4 text-lg font-semibold text-destructive">You are not authorized. Please log in.</div>
-          <a href="/login" className="inline-block rounded bg-primary px-4 py-2 text-white hover:bg-primary/80">Go to Login</a>
-        </div>
-      );
-    }
-    return <div>Error loading campaign: {String(paramsError?.message || paramsError)}</div>;
-  }
-
-  if (!id) {
-    return null;
-  }
-
+  const { id } = params;
   const router = useRouter();
   const { data: campaign, isLoading } = useCampaign(id);
   const { data: uploadsData } = useCampaignUploads(id);
@@ -93,6 +70,10 @@ export default function CampaignDetailPage({
   const deleteCampaign = useDeleteCampaign();
   const [generateOpen, setGenerateOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+
+  if (!id) {
+    return null;
+  }
 
   if (isLoading || !campaign) {
     return (
