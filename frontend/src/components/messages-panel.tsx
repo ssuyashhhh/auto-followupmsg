@@ -21,11 +21,11 @@ import { RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 
 const MESSAGE_TYPES = [
   { value: "all", label: "All Types" },
-  { value: "initial_outreach", label: "Initial Outreach" },
+  { value: "cold_outreach", label: "Cold Outreach" },
   { value: "follow_up_1", label: "Follow Up 1" },
   { value: "follow_up_2", label: "Follow Up 2" },
   { value: "follow_up_3", label: "Follow Up 3" },
-  { value: "breakup", label: "Breakup" },
+  { value: "custom", label: "Custom" },
 ];
 
 const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {

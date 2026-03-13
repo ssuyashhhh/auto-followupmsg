@@ -29,11 +29,11 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 
 const MESSAGE_TYPES = [
-  { value: "initial_outreach", label: "Initial Outreach" },
+  { value: "cold_outreach", label: "Cold Outreach" },
   { value: "follow_up_1", label: "Follow Up 1" },
   { value: "follow_up_2", label: "Follow Up 2" },
   { value: "follow_up_3", label: "Follow Up 3" },
-  { value: "breakup", label: "Breakup" },
+  { value: "custom", label: "Custom" },
 ];
 
 const AI_MODELS = [
@@ -63,7 +63,7 @@ export function GenerateDialog({
   open,
   onOpenChange,
 }: GenerateDialogProps) {
-  const [messageType, setMessageType] = useState("initial_outreach");
+  const [messageType, setMessageType] = useState("cold_outreach");
   const [model, setModel] = useState("llama-3.3-70b-versatile");
   const [templateId, setTemplateId] = useState<string>("default");
   const [taskId, setTaskId] = useState<string | null>(null);
