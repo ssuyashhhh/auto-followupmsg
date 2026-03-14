@@ -1,5 +1,7 @@
-from pydantic_settings import BaseSettings
+import os
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class Settings(BaseSettings):
     # App
@@ -36,7 +38,10 @@ class Settings(BaseSettings):
     max_file_size_mb: int = 10
     allowed_file_types: list[str] = ["csv", "txt", "xlsx", "xls"]
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
-
+    model_config = SettingsConfigDict(
+        env_file=os.path.join(BASE_DIR, ".env"), 
+        env_file_encoding="utf-8",
+        extra="ignore"
+    )
 
 settings = Settings()
