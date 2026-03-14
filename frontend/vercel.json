@@ -4,6 +4,6 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "env": {
-    "NEXT_PUBLIC_API_URL": ""
+    "NEXT_PUBLIC_API_URL": "https://auto-followups-api.onrender.com/api/v1"
   }
 }
