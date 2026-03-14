@@ -40,6 +40,13 @@ async def upload_file_to_storage(
                 "x-upsert": "true",
             },
         )
+        if response.status_code >= 400:
+            logger.error(
+                "Supabase Storage error %s for %s: %s",
+                response.status_code,
+                storage_path,
+                response.text,
+            )
         response.raise_for_status()
 
     logger.info("Uploaded %d bytes to %s", len(content), storage_path)
