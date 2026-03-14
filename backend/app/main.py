@@ -69,6 +69,18 @@ app.include_router(tasks.router, prefix=f"{settings.api_prefix}/tasks", tags=["T
 
 
 # Global exception handler
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    logger.error("Validation Error: %s", exc.errors())
+    logger.error("Body: %s", exc.body)
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors(), "body": exc.body},
+    )
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.exception("Unhandled error on %s %s", request.method, request.url.path)
