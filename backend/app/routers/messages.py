@@ -104,11 +104,13 @@ async def generate_messages_bulk(
         # Only contacts that haven't been messaged yet
         query = query.where(Contact.status == ContactStatus.NEW)
     else:
-        # Follow-ups: contacts that already got the previous message
+        # Follow-ups: contacts that already got the previous message (generated or sent)
         query = query.where(
             Contact.status.in_([
                 ContactStatus.MESSAGE_GENERATED,
                 ContactStatus.MESSAGE_SENT,
+                ContactStatus.FOLLOW_UP_SCHEDULED,
+                ContactStatus.FOLLOW_UP_SENT,
             ])
         )
 
