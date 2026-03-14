@@ -65,7 +65,7 @@ export default function CampaignsPage() {
                   )}
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                  <div className="grid grid-cols-2 gap-2 text-center text-sm">
                     <div>
                       <div className="font-bold">{campaign.total_contacts}</div>
                       <div className="text-muted-foreground">Contacts</div>
@@ -73,10 +73,6 @@ export default function CampaignsPage() {
                     <div>
                       <div className="font-bold">{campaign.messages_generated}</div>
                       <div className="text-muted-foreground">Generated</div>
-                    </div>
-                    <div>
-                      <div className="font-bold">{campaign.messages_sent}</div>
-                      <div className="text-muted-foreground">Sent</div>
                     </div>
                   </div>
                   <p className="mt-3 text-xs text-muted-foreground">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FolderOpen, MessageSquare, Users, BarChart3, Plus } from "lucide-react";
+import { FolderOpen, MessageSquare, Users, Plus } from "lucide-react";
 
 import { useCampaigns } from "@/lib/hooks";
 import { useAuthStore } from "@/stores/auth";
@@ -75,16 +75,6 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{totalGenerated.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">AI-generated messages</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Messages Sent</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalSent.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Delivered to recipients</p>
           </CardContent>
         </Card>
       </div>

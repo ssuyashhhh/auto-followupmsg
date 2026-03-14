@@ -189,14 +189,6 @@ export default function CampaignDetailPage({
             <div className="text-2xl font-bold">{campaign.messages_generated}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Messages Sent</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{campaign.messages_sent}</div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Tabs */}
