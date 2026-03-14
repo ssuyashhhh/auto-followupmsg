@@ -101,8 +101,8 @@ async def generate_messages_bulk(
     )
 
     if data.message_type == MessageType.COLD_OUTREACH:
-        # Only contacts that haven't been messaged yet
-        query = query.where(Contact.status == ContactStatus.NEW)
+        # Allow new contacts or contacts that only have generated (but not sent) messages
+        query = query.where(Contact.status.in_([ContactStatus.NEW, ContactStatus.MESSAGE_GENERATED]))
     else:
         # Follow-ups: contacts that already got the previous message (generated or sent)
         query = query.where(
