@@ -134,8 +134,8 @@ CREATE TABLE contacts (
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     -- Prevent duplicate contacts in the same campaign
-    CONSTRAINT uq_contact_campaign_email UNIQUE NULLS NOT DISTINCT (campaign_id, email),
-    CONSTRAINT uq_contact_campaign_linkedin UNIQUE NULLS NOT DISTINCT (campaign_id, linkedin_url)
+    CONSTRAINT uq_contact_campaign_email UNIQUE (campaign_id, email),
+    CONSTRAINT uq_contact_campaign_linkedin UNIQUE (campaign_id, linkedin_url)
 );
 
 CREATE INDEX idx_contacts_user_id ON contacts(user_id);

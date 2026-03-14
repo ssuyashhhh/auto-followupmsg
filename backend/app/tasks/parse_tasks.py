@@ -67,16 +67,18 @@ def _create_contacts_batch(
             inserted += len(contact_objects)
         except Exception as e:
             db.rollback()
-            # Fall back to one-by-one insertion to skip duplicates
-            logger.warning("Batch insert failed, falling back to individual inserts: %s", e)
+            # Fall back to one-by-one insertion using savepoints
+            logger.warning("Batch insert failed, falling back to individual inserts")
             for contact in contact_objects:
+                db.session.expunge(contact) if hasattr(db, 'session') else None
+                # db.add does not immediately bind to a savepoint unless explicitly inside one
                 try:
-                    db.add(contact)
-                    db.flush()
+                    with db.begin_nested(): # Creates a savepoint
+                        db.add(contact)
+                        db.flush()
                     inserted += 1
-                except Exception:
-                    db.rollback()
-                    logger.debug("Skipped duplicate contact: %s", contact.full_name)
+                except Exception as ex:
+                    logger.debug("Skipped duplicate or invalid contact: %s (%s)", contact.full_name, ex)
 
     return inserted
 
