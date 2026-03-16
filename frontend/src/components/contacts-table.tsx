@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight, ExternalLink, Mail } from "lucide-react";
 
 import { useCampaignContacts } from "@/lib/hooks";
@@ -30,12 +30,20 @@ const statusVariant: Record<string, "default" | "success" | "warning" | "seconda
 
 export function ContactsTable({ campaignId }: { campaignId: string }) {
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(0);
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
   const limit = 20;
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const { data, isLoading } = useCampaignContacts(campaignId, {
-    search: search || undefined,
+    search: debouncedSearch || undefined,
     skip: page * limit,
     limit,
   });
@@ -55,7 +63,7 @@ export function ContactsTable({ campaignId }: { campaignId: string }) {
             <div className="relative w-72">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search contacts..."
+                placeholder="Search by name, email, company..."
                 className="pl-9"
                 value={search}
                 onChange={(e) => {
