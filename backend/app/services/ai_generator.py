@@ -321,12 +321,12 @@ def generate_cold_message(
     user_prompt: str,
     model: str | None = None,
 ) -> GenerationResult | GenerationError:
-    """Generate a cold outreach message (higher creativity, ~200 words)."""
+    """Generate a cold outreach message (higher creativity, max 200 characters)."""
     return generate_message(
         system_prompt=system_prompt,
         user_prompt=user_prompt,
         model=model,
-        max_tokens=400,   # ~200 words
+        max_tokens=150,   # plenty for max 200 characters
         temperature=0.8,  # More creative for outreach
     )
 
@@ -336,11 +336,11 @@ def generate_followup_message(
     user_prompt: str,
     model: str | None = None,
 ) -> GenerationResult | GenerationError:
-    """Generate a follow-up message (lower creativity, ~100 words)."""
+    """Generate a follow-up message (lower creativity, 200-300 words)."""
     return generate_message(
         system_prompt=system_prompt,
         user_prompt=user_prompt,
         model=model,
-        max_tokens=250,   # ~100 words
+        max_tokens=600,   # ~200-300 words
         temperature=0.6,  # More focused for follow-ups
     )

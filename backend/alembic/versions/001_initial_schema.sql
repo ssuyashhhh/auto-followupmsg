@@ -167,7 +167,7 @@ CREATE TABLE messages (
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    CONSTRAINT chk_word_count CHECK (word_count > 0 AND word_count <= 300)
+    CONSTRAINT chk_word_count CHECK (word_count > 0 AND word_count <= 500)
 );
 
 CREATE INDEX idx_messages_contact_id ON messages(contact_id);
@@ -234,7 +234,7 @@ VALUES
 (
     'Default Cold Outreach',
     'cold_outreach',
-    'You are an expert cold outreach copywriter. Write personalized, conversational messages that feel human and authentic. Never be salesy or pushy. Keep messages under 200 words. Focus on providing value and building genuine connection.',
+    'You are an expert cold outreach copywriter. Write personalized, conversational messages that feel human and authentic. Never be salesy or pushy. Keep messages strictly under 200 characters. Focus on providing value and building genuine connection.',
     'Write a personalized cold outreach message for:
 Name: {{name}}
 Company: {{company}}
@@ -246,14 +246,14 @@ The message should:
 2. Offer genuine value or insight
 3. End with a soft, low-pressure call to action
 4. Feel like it was written by a real person, not AI
-5. Be under 200 words',
+5. Be strictly under 200 characters',
     TRUE,
     TRUE
 ),
 (
     'Default Follow-Up 1',
     'follow_up_1',
-    'You are an expert follow-up message writer. Write a brief, friendly follow-up that references the previous outreach. Be respectful of their time. Keep it under 100 words.',
+    'You are an expert follow-up message writer. Write a friendly follow-up that references the previous outreach. Be respectful of their time. The length must be strictly between 200 and 300 words.',
     'Write a follow-up message for:
 Name: {{name}}
 Company: {{company}}
@@ -266,14 +266,14 @@ The follow-up should:
 1. Be brief and respectful
 2. Add new value or a different angle
 3. Not be pushy or guilt-tripping
-4. Be under 100 words',
+4. Be strictly between 200 and 300 words',
     TRUE,
     TRUE
 ),
 (
     'Default Follow-Up 2',
     'follow_up_2',
-    'You are an expert at writing final follow-up messages. This is the last attempt to connect. Be gracious, provide value, and make it easy for them to respond or opt out.',
+    'You are an expert at writing final follow-up messages. This is the last attempt to connect. Be gracious, provide value, and make it easy for them to respond or opt out. The length must be strictly between 200 and 300 words.',
     'Write a final follow-up message for:
 Name: {{name}}
 Company: {{company}}
@@ -286,7 +286,7 @@ The message should:
 1. Acknowledge this is a follow-up
 2. Provide a compelling reason to connect
 3. Give them an easy out
-4. Be under 80 words',
+4. Be strictly between 200 and 300 words',
     TRUE,
     TRUE
 );
