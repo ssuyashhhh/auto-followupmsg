@@ -263,6 +263,6 @@ async def process_upload(
     # 5. Dispatch parsing
     from app.tasks.parse_tasks import parse_uploaded_file
 
-    task = parse_uploaded_file.delay(str(upload.id))
+    task = parse_uploaded_file.delay(str(upload.id))  # pyright: ignore[reportFunctionMemberAccess]
 
     return UploadResult(upload=upload, task_id=task.id)

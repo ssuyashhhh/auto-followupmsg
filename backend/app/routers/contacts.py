@@ -201,5 +201,3 @@ async def delete_contacts_by_upload(
         affected_count=count,
         message=f"Deleted {count} contacts from upload",
     )
-
-    await db.delete(contact)

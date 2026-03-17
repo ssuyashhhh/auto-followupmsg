@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   FolderOpen,
   LogOut,
-  MessageSquare,
   Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";

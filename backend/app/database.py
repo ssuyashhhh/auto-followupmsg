@@ -1,4 +1,3 @@
-import ssl as _ssl
 from collections.abc import AsyncGenerator, Generator
 from contextlib import contextmanager
 
@@ -81,7 +80,6 @@ def _get_sync_session_factory():
 
 
 # Keep backward-compatible aliases
-@property
 def sync_engine():
     return _get_sync_engine()
 

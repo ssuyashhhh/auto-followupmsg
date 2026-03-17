@@ -18,13 +18,10 @@ from sqlalchemy.orm import Session
 
 from app.models.campaign import Campaign
 from app.models.contact import Contact
-from app.models.enums import ContactStatus, MessageStatus, MessageType
+from app.models.enums import MessageStatus, MessageType
 from app.models.message import Message
 from app.services.ai_generator import (
-    GenerationError,
     GenerationResult,
-    generate_cold_message,
-    generate_followup_message,
 )
 from app.services.prompt_service import (
     build_contact_variables,
@@ -167,34 +164,25 @@ def _deactivate_previous_versions(
     )
 
 
-def generate_message_for_contact(
+def build_prompts_for_contact(
     db: Session,
     contact: Contact,
     user_id: uuid.UUID,
-    campaign_id: uuid.UUID,
     message_type: MessageType,
-    model: str | None = None,
     template_id: uuid.UUID | None = None,
     previous_message: str | None = None,
-) -> Message | None:
+    template=None,
+    user=None,
+) -> tuple[str, str, str] | None:
     """
-    Generate a single AI message for a contact.
-
-    Steps:
-    1. Resolve prompt template (explicit ID > user default > system default)
-    2. Build variables from contact data
-    3. Render system + user prompts
-    4. Call AI generator
-    5. Create message record with version management
-
-    Returns:
-        Message on success, None on generation failure
+    Build system and user prompts for a contact.
+    Returns: (system_prompt, user_prompt, template_name)
     """
-    # 1. Resolve prompt template
-    if template_id:
-        template = get_template_by_id_sync(db, template_id)
-    else:
-        template = get_default_template_sync(db, message_type, user_id)
+    if not template:
+        if template_id:
+            template = get_template_by_id_sync(db, template_id)
+        else:
+            template = get_default_template_sync(db, message_type, user_id)
 
     if not template:
         logger.error(
@@ -202,13 +190,12 @@ def generate_message_for_contact(
         )
         return None
 
-    # 2. Build template variables
-    # Get sender info
-    from app.models.user import User
+    if not user:
+        from app.models.user import User
 
-    user = db.execute(
-        select(User).where(User.id == user_id)
-    ).scalar_one_or_none()
+        user = db.execute(
+            select(User).where(User.id == user_id)
+        ).scalar_one_or_none()
 
     variables = build_contact_variables(
         contact_name=contact.full_name,
@@ -222,32 +209,28 @@ def generate_message_for_contact(
         sender_company=user.company if user else None,
     )
 
-    # 3. Render prompts
     system_prompt = render_template(template.system_prompt, variables)
     user_prompt = render_template(template.user_prompt, variables)
 
-    # 4. Call AI
-    if message_type == MessageType.COLD_OUTREACH:
-        result = generate_cold_message(system_prompt, user_prompt, model)
-    else:
-        result = generate_followup_message(system_prompt, user_prompt, model)
+    return system_prompt, user_prompt, template.name
 
-    if isinstance(result, GenerationError):
-        logger.error(
-            "AI generation failed for contact=%s: %s (retryable=%s)",
-            contact.id,
-            result.error,
-            result.retryable,
-        )
-        return None
 
-    # 5. Version management & create message
-    next_version = _get_next_version(db, contact.id, message_type)
-    _deactivate_previous_versions(db, contact.id, message_type)
+def save_generated_message(
+    db: Session,
+    contact_id: uuid.UUID,
+    user_id: uuid.UUID,
+    campaign_id: uuid.UUID,
+    message_type: MessageType,
+    result: GenerationResult,
+    template_name: str,
+) -> Message:
+    """Save the generated AI message to the database."""
+    next_version = _get_next_version(db, contact_id, message_type)
+    _deactivate_previous_versions(db, contact_id, message_type)
 
     message = Message(
         user_id=user_id,
-        contact_id=contact.id,
+        contact_id=contact_id,
         campaign_id=campaign_id,
         message_type=message_type,
         content=result.content,
@@ -256,7 +239,7 @@ def generate_message_for_contact(
         is_active=True,
         status=MessageStatus.GENERATED,
         ai_model=result.model,
-        prompt_template=template.name,
+        prompt_template=template_name,
         ai_metadata=result.metadata,
         generated_at=datetime.now(timezone.utc),
     )

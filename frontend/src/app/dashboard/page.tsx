@@ -24,7 +24,6 @@ export default function DashboardPage() {
 
   const totalContacts = campaigns.reduce((s, c) => s + c.total_contacts, 0);
   const totalGenerated = campaigns.reduce((s, c) => s + c.messages_generated, 0);
-  const totalSent = campaigns.reduce((s, c) => s + c.messages_sent, 0);
   const activeCampaigns = campaigns.filter((c) => c.status === "active").length;
 
   return (

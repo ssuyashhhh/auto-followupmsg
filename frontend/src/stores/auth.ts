@@ -12,6 +12,7 @@ export interface User {
 interface AuthState {
   user: User | null;
   token: string | null;
+  refreshToken: string | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (data: { email: string; password: string; full_name: string; company?: string }) => Promise<void>;
@@ -23,13 +24,15 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: null,
+  refreshToken: null,
   isLoading: true,
 
   hydrate: () => {
     if (typeof window === "undefined") return;
     const token = localStorage.getItem("token");
+    const refreshToken = localStorage.getItem("refreshToken");
     if (token) {
-      set({ token });
+      set({ token, refreshToken });
     } else {
       set({ isLoading: false });
     }
@@ -43,7 +46,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
     localStorage.setItem("token", data.access_token);
-    set({ token: data.access_token });
+    localStorage.setItem("refreshToken", data.refresh_token);
+    set({ token: data.access_token, refreshToken: data.refresh_token });
     // Fetch user profile
     const { data: user } = await api.get("/auth/me");
     set({ user, isLoading: false });
@@ -55,7 +59,8 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logout: () => {
     localStorage.removeItem("token");
-    set({ user: null, token: null, isLoading: false });
+    localStorage.removeItem("refreshToken");
+    set({ user: null, token: null, refreshToken: null, isLoading: false });
   },
 
   fetchUser: async () => {
@@ -64,7 +69,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ user: data, isLoading: false });
     } catch {
       localStorage.removeItem("token");
-      set({ user: null, token: null, isLoading: false });
+      localStorage.removeItem("refreshToken");
+      set({ user: null, token: null, refreshToken: null, isLoading: false });
     }
   },
 }));

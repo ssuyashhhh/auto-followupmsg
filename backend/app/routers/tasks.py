@@ -4,9 +4,8 @@ Task monitoring router — check Celery task status and results.
 Provides endpoints for the frontend to poll task progress.
 """
 
-import uuid
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from app.models.user import User

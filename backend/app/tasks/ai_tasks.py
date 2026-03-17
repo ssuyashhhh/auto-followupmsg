@@ -3,14 +3,20 @@
 import logging
 import uuid
 
+import asyncio
 from sqlalchemy import select
 
 from app.database import get_sync_db
 from app.models.contact import Contact
 from app.models.enums import ContactStatus, MessageType
-from app.services.ai_generator import GenerationError
+from app.services.ai_generator import (
+    GenerationError,
+    generate_cold_message,
+    generate_followup_message,
+)
 from app.services.message_service import (
-    generate_message_for_contact,
+    build_prompts_for_contact,
+    save_generated_message,
     get_previous_message_content,
     update_campaign_message_count,
 )
@@ -46,20 +52,33 @@ def generate_messages_for_campaign(
         campaign_id, message_type, len(contact_ids), model,
     )
 
-    generated_count = 0
-    failed_count = 0
+    generated_count: int = 0
+    failed_count: int = 0
+
+    tasks = []
+    contact_data = []
 
     with get_sync_db() as db:
-        for idx, cid_str in enumerate(contact_ids):
-            contact_uuid = uuid.UUID(cid_str)
+        from app.models.user import User
+        from app.services.prompt_service import get_template_by_id_sync, get_default_template_sync
 
-            # Load contact
-            contact = db.execute(
-                select(Contact).where(
-                    Contact.id == contact_uuid,
-                    Contact.user_id == uid,
-                )
-            ).scalar_one_or_none()
+        user = db.execute(select(User).where(User.id == uid)).scalar_one_or_none()
+        if tmpl_id:
+            template = get_template_by_id_sync(db, tmpl_id)
+        else:
+            template = get_default_template_sync(db, msg_type, uid)
+
+        contact_uuids = [uuid.UUID(cid_str) for cid_str in contact_ids]
+        contacts = db.execute(
+            select(Contact).where(
+                Contact.id.in_(contact_uuids),
+                Contact.user_id == uid,
+            )
+        ).scalars().all()
+        contact_map = {str(c.id): c for c in contacts}
+
+        for cid_str in contact_ids:
+            contact = contact_map.get(cid_str)
 
             if not contact:
                 logger.warning("Contact %s not found, skipping", cid_str)
@@ -73,36 +92,69 @@ def generate_messages_for_campaign(
                     db, contact.id, msg_type
                 )
 
-            # Generate message
-            message = generate_message_for_contact(
+            # Build prompts
+            prompts = build_prompts_for_contact(
                 db=db,
                 contact=contact,
                 user_id=uid,
-                campaign_id=cid,
                 message_type=msg_type,
-                model=model,
                 template_id=tmpl_id,
                 previous_message=previous_message,
+                template=template,
+                user=user,
             )
 
-            if message:
-                # Update contact status
-                contact.status = ContactStatus.MESSAGE_GENERATED
-                generated_count += 1
-                # Commit each message individually so partial progress is saved
-                db.commit()
-                logger.info(
-                    "Generated message %d/%d for contact=%s",
-                    idx + 1, len(contact_ids), cid_str,
-                )
+            if prompts:
+                system_prompt, user_prompt, template_name = prompts
+                contact_data.append((contact.id, template_name, contact))
+                if msg_type == MessageType.COLD_OUTREACH:
+                    tasks.append((generate_cold_message, (system_prompt, user_prompt, model)))
+                else:
+                    tasks.append((generate_followup_message, (system_prompt, user_prompt, model)))
             else:
                 failed_count += 1
-                db.rollback()
-                logger.warning(
-                    "Failed to generate message for contact=%s", cid_str
-                )
+                logger.warning("Failed to build prompts for contact=%s", cid_str)
 
-        # Update campaign counter
+    if tasks:
+        logger.info("Awaiting %d parallel AI generation tasks...", len(tasks))
+        async def _run_all():
+            sem = asyncio.Semaphore(20)  # max 20 concurrent AI requests
+            async def _run(func, args):
+                async with sem:
+                    return await func(*args)
+            return await asyncio.gather(*[_run(f, a) for f, a in tasks], return_exceptions=True)
+        results = asyncio.run(_run_all())
+    else:
+        results = []
+
+    with get_sync_db() as db:
+        for (contact_id, template_name, contact), result in zip(contact_data, results):
+            if isinstance(result, BaseException):
+                logger.error("AI generation failed for contact=%s with Exception: %s", contact_id, result)
+                failed_count += 1
+            elif isinstance(result, GenerationError) or hasattr(result, "error"):
+                err_msg = getattr(result, "error", "Unknown")
+                retry_flag = getattr(result, "retryable", False)
+                logger.error("AI generation failed for contact=%s: %s (retryable=%s)", 
+                             contact_id, err_msg, retry_flag)
+                failed_count += 1
+            else:
+                save_generated_message(
+                    db=db,
+                    contact_id=contact_id,
+                    user_id=uid,
+                    campaign_id=cid,
+                    message_type=msg_type,
+                    result=result,
+                    template_name=template_name,
+                )
+                contact_in_db = db.execute(select(Contact).where(Contact.id == contact_id)).scalar_one()
+                contact_in_db.status = ContactStatus.MESSAGE_GENERATED
+                generated_count += 1
+                logger.info("Generated message for contact=%s", contact_id)
+        
+        db.commit()
+
         if generated_count > 0:
             update_campaign_message_count(db, cid, generated_count)
             db.commit()
@@ -165,24 +217,59 @@ def regenerate_single_message(
                 db, contact.id, msg_type
             )
 
-        message = generate_message_for_contact(
+        prompts = build_prompts_for_contact(
             db=db,
             contact=contact,
             user_id=uid,
-            campaign_id=cid,
             message_type=msg_type,
-            model=model,
             template_id=tmpl_id,
             previous_message=previous_message,
         )
 
-        if not message:
+        if not prompts:
             logger.error("Regeneration failed for contact=%s", contact_id)
+            return {"error": "Failed to build prompts"}
+
+        system_prompt, user_prompt, template_name = prompts
+
+    result = None
+    try:
+        if msg_type == MessageType.COLD_OUTREACH:
+            result = asyncio.run(generate_cold_message(system_prompt, user_prompt, model))
+        else:
+            result = asyncio.run(generate_followup_message(system_prompt, user_prompt, model))
+    except Exception as e:
+        logger.error("Regeneration async AI call failed: %s", e)
+        try:
+            self.retry()
+        except self.MaxRetriesExceededError:
+            return {"error": "Generation failed after retries"}
+
+    if isinstance(result, GenerationError) or hasattr(result, "error"):
+        err_msg = getattr(result, "error", "Unknown")
+        retry_flag = getattr(result, "retryable", False)
+        logger.error("Regeneration failed for contact=%s: %s", contact_id, err_msg)
+        if retry_flag:
             try:
                 self.retry()
             except self.MaxRetriesExceededError:
                 return {"error": "Generation failed after retries"}
+        return {"error": "Generation error"}
 
+    if result is None:
+        logger.error("Regeneration failed for contact=%s: Unknown message type or no result", contact_id)
+        return {"error": "Generation error"}
+
+    with get_sync_db() as db:
+        message = save_generated_message(
+            db=db,
+            contact_id=contact.id,
+            user_id=uid,
+            campaign_id=cid,
+            message_type=msg_type,
+            result=result,
+            template_name=template_name,
+        )
         db.commit()
 
     logger.info("Regenerated message for contact=%s version=%d", contact_id, message.version)
@@ -232,7 +319,7 @@ def process_scheduled_followups():
                 )
 
                 # Dispatch as a bulk generation task
-                generate_messages_for_campaign.delay(
+                generate_messages_for_campaign.delay(  # pyright: ignore[reportFunctionMemberAccess]
                     user_id=str(campaign.user_id),
                     campaign_id=str(campaign.id),
                     contact_ids=contact_ids,

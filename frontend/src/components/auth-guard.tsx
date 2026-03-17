@@ -14,10 +14,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   }, [hydrate]);
 
   useEffect(() => {
-    if (token && !user && !isLoading) {
+    if (token && !user) {
       fetchUser();
     }
-  }, [token, user, isLoading, fetchUser]);
+  }, [token, user, fetchUser]);
 
   useEffect(() => {
     if (!isLoading && !token) {

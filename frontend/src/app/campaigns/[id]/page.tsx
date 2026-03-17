@@ -8,7 +8,6 @@ import {
   ArrowLeft,
   FileUp,
   MessageSquare,
-  Settings,
   Trash2,
   Users,
 } from "lucide-react";
@@ -16,10 +15,8 @@ import {
 import {
   useCampaign,
   useCampaignContacts,
-  useCampaignMessages,
   useCampaignUploads,
   useDeleteCampaign,
-  useGenerateMessages,
   useGenerationStats,
   useUpdateCampaign,
 } from "@/lib/hooks";
@@ -28,15 +25,16 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import dynamic from "next/dynamic";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileUploadZone } from "@/components/file-upload-zone";
-import { ContactsTable } from "@/components/contacts-table";
-import { MessagesPanel } from "@/components/messages-panel";
-import { GenerateDialog } from "@/components/generate-dialog";
+
+const FileUploadZone = dynamic(() => import("@/components/file-upload-zone").then(mod => mod.FileUploadZone), { ssr: false });
+const ContactsTable = dynamic(() => import("@/components/contacts-table").then(mod => mod.ContactsTable), { ssr: false });
+const MessagesPanel = dynamic(() => import("@/components/messages-panel").then(mod => mod.MessagesPanel), { ssr: false });
+const GenerateDialog = dynamic(() => import("@/components/generate-dialog").then(mod => mod.GenerateDialog), { ssr: false });
 import {
   Dialog,
   DialogContent,
@@ -64,8 +62,8 @@ export default function CampaignDetailPage({
   const router = useRouter();
   const { data: campaign, isLoading } = useCampaign(id);
   const { data: uploadsData } = useCampaignUploads(id);
-  const { data: contactsData } = useCampaignContacts(id, { limit: 10 });
-  const { data: statsData } = useGenerationStats(id);
+  useCampaignContacts(id, { limit: 10 });
+  useGenerationStats(id);
   const updateCampaign = useUpdateCampaign();
   const deleteCampaign = useDeleteCampaign();
   const [generateOpen, setGenerateOpen] = useState(false);

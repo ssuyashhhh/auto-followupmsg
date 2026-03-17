@@ -7,13 +7,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.user import User
-from app.schemas.user import Token, UserCreate, UserResponse
+from app.schemas.user import Token, TokenRefresh, UserCreate, UserResponse
 from app.utils.auth import (
     create_access_token,
+    create_refresh_token,
     get_current_user,
     get_password_hash,
     verify_password,
 )
+from jose import JWTError, jwt
 
 router = APIRouter()
 
@@ -61,7 +63,37 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
         )
 
     access_token = create_access_token(data={"sub": str(user.id)})
-    return Token(access_token=access_token)
+    refresh_token = create_refresh_token(data={"sub": str(user.id)})
+    return Token(access_token=access_token, refresh_token=refresh_token)
+
+
+@router.post("/refresh", response_model=Token)
+async def refresh_token(token_data: TokenRefresh, db: AsyncSession = Depends(get_db)):
+    """Refresh access token using refresh token."""
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    from app.config import settings
+    try:
+        payload = jwt.decode(token_data.refresh_token, settings.secret_key, algorithms=[settings.algorithm])
+        user_id: str | None = payload.get("sub")
+        token_type: str | None = payload.get("type")
+        if user_id is None or token_type != "refresh":
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    result = await db.execute(select(User).where(User.id == uuid.UUID(user_id)))
+    user = result.scalar_one_or_none()
+
+    if user is None or not user.is_active:
+        raise credentials_exception
+
+    access_token = create_access_token(data={"sub": str(user.id)})
+    new_refresh_token = create_refresh_token(data={"sub": str(user.id)})
+    return Token(access_token=access_token, refresh_token=new_refresh_token)
 
 
 @router.get("/me", response_model=UserResponse)

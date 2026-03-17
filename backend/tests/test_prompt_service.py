@@ -37,7 +37,7 @@ class TestRenderTemplate:
         assert result == "Plain text no variables"
 
     def test_all_supported_variables(self):
-        variables = {var: f"value_{var}" for var in SUPPORTED_VARIABLES}
+        variables: dict[str, str | None] = {var: f"value_{var}" for var in SUPPORTED_VARIABLES}
         template = " ".join(f"{{{{{v}}}}}" for v in SUPPORTED_VARIABLES)
         result = render_template(template, variables)
         for var in SUPPORTED_VARIABLES:

@@ -2,6 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -67,10 +68,6 @@ app.include_router(messages.router, prefix=f"{settings.api_prefix}/messages", ta
 app.include_router(prompt_templates.router, prefix=f"{settings.api_prefix}/prompts", tags=["Prompt Templates"])
 app.include_router(tasks.router, prefix=f"{settings.api_prefix}/tasks", tags=["Tasks"])
 
-
-# Global exception handler
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc):

@@ -8,11 +8,9 @@ import type {
   ContactStats,
   GenerationStats,
   GenerationTaskResponse,
-  Message,
   MessageListResponse,
   PromptTemplate,
   TaskStatus,
-  Upload,
   UploadListResponse,
 } from "@/lib/types";
 

@@ -65,7 +65,7 @@ def _create_contacts_batch(
         try:
             db.flush()
             inserted += len(contact_objects)
-        except Exception as e:
+        except Exception:
             db.rollback()
             # Fall back to one-by-one insertion using savepoints
             logger.warning("Batch insert failed, falling back to individual inserts")

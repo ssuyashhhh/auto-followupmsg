@@ -126,7 +126,7 @@ async def generate_messages_bulk(
     # Dispatch Celery task
     from app.tasks.ai_tasks import generate_messages_for_campaign
 
-    task = generate_messages_for_campaign.delay(
+    task = generate_messages_for_campaign.delay(  # pyright: ignore[reportFunctionMemberAccess]
         user_id=str(current_user.id),
         campaign_id=str(data.campaign_id),
         contact_ids=contact_ids,
@@ -170,7 +170,7 @@ async def regenerate_message(
 
     from app.tasks.ai_tasks import regenerate_single_message
 
-    task = regenerate_single_message.delay(
+    task = regenerate_single_message.delay(  # pyright: ignore[reportFunctionMemberAccess]
         user_id=str(current_user.id),
         contact_id=str(data.contact_id),
         campaign_id=str(data.campaign_id),

@@ -24,7 +24,7 @@ const statusIcon: Record<string, React.ReactNode> = {
 };
 
 export function FileUploadZone({ campaignId }: { campaignId: string }) {
-  const { data, isLoading } = useCampaignUploads(campaignId);
+  const { data } = useCampaignUploads(campaignId);
   const uploadFile = useUploadFile();
 
   const onDrop = useCallback(

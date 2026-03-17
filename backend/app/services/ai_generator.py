@@ -12,9 +12,9 @@ import logging
 import time
 from dataclasses import dataclass
 
-import anthropic
-import openai
-from groq import Groq
+from anthropic import AsyncAnthropic, RateLimitError as AnthropicRateLimitError, APIError as AnthropicAPIError
+from openai import AsyncOpenAI, RateLimitError as OpenAIRateLimitError, APIError as OpenAIAPIError
+from groq import AsyncGroq
 
 from app.config import settings
 
@@ -103,7 +103,7 @@ def get_default_model() -> str:
 # OpenAI Provider
 # ============================================
 
-def _generate_openai(
+async def _generate_openai(
     system_prompt: str,
     user_prompt: str,
     model: str,
@@ -111,11 +111,11 @@ def _generate_openai(
     temperature: float = 0.7,
 ) -> GenerationResult | GenerationError:
     """Generate message using OpenAI API."""
-    client = openai.OpenAI(api_key=settings.openai_api_key)
+    client = AsyncOpenAI(api_key=settings.openai_api_key)
 
     start_time = time.time()
     try:
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             model=model,
             messages=[
                 {"role": "system", "content": system_prompt},
@@ -147,11 +147,11 @@ def _generate_openai(
             },
         )
 
-    except openai.RateLimitError as e:
+    except OpenAIRateLimitError as e:
         logger.warning("OpenAI rate limit hit: %s", e)
         return GenerationError(error=f"Rate limit: {e}", model=model, retryable=True)
 
-    except openai.APIError as e:
+    except OpenAIAPIError as e:
         logger.error("OpenAI API error: %s", e)
         return GenerationError(error=str(e), model=model, retryable=True)
 
@@ -164,7 +164,7 @@ def _generate_openai(
 # Claude (Anthropic) Provider
 # ============================================
 
-def _generate_claude(
+async def _generate_claude(
     system_prompt: str,
     user_prompt: str,
     model: str,
@@ -172,11 +172,11 @@ def _generate_claude(
     temperature: float = 0.7,
 ) -> GenerationResult | GenerationError:
     """Generate message using Anthropic Claude API."""
-    client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+    client = AsyncAnthropic(api_key=settings.anthropic_api_key)
 
     start_time = time.time()
     try:
-        response = client.messages.create(
+        response = await client.messages.create(
             model=model,
             max_tokens=max_tokens,
             temperature=temperature,
@@ -206,11 +206,11 @@ def _generate_claude(
             },
         )
 
-    except anthropic.RateLimitError as e:
+    except AnthropicRateLimitError as e:
         logger.warning("Claude rate limit hit: %s", e)
         return GenerationError(error=f"Rate limit: {e}", model=model, retryable=True)
 
-    except anthropic.APIError as e:
+    except AnthropicAPIError as e:
         logger.error("Claude API error: %s", e)
         return GenerationError(error=str(e), model=model, retryable=True)
 
@@ -223,7 +223,7 @@ def _generate_claude(
 # Groq Provider (Free — Llama, Mixtral, Gemma)
 # ============================================
 
-def _generate_groq(
+async def _generate_groq(
     system_prompt: str,
     user_prompt: str,
     model: str,
@@ -231,11 +231,11 @@ def _generate_groq(
     temperature: float = 0.7,
 ) -> GenerationResult | GenerationError:
     """Generate message using Groq API (OpenAI-compatible)."""
-    client = Groq(api_key=settings.groq_api_key)
+    client = AsyncGroq(api_key=settings.groq_api_key)
 
     start_time = time.time()
     try:
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             model=model,
             messages=[
                 {"role": "system", "content": system_prompt},
@@ -277,7 +277,7 @@ def _generate_groq(
 # Unified Generator
 # ============================================
 
-def generate_message(
+async def generate_message(
     system_prompt: str,
     user_prompt: str,
     model: str | None = None,
@@ -305,24 +305,24 @@ def generate_message(
     logger.info("Generating message with model=%s", model)
 
     if _is_openai_model(model):
-        return _generate_openai(system_prompt, user_prompt, model, max_tokens, temperature)
+        return await _generate_openai(system_prompt, user_prompt, model, max_tokens, temperature)
     elif _is_claude_model(model):
-        return _generate_claude(system_prompt, user_prompt, model, max_tokens, temperature)
+        return await _generate_claude(system_prompt, user_prompt, model, max_tokens, temperature)
     elif _is_groq_model(model):
-        return _generate_groq(system_prompt, user_prompt, model, max_tokens, temperature)
+        return await _generate_groq(system_prompt, user_prompt, model, max_tokens, temperature)
     else:
         # Default to Groq for unknown models (free)
         logger.warning("Unknown model '%s', defaulting to Groq provider", model)
-        return _generate_groq(system_prompt, user_prompt, model, max_tokens, temperature)
+        return await _generate_groq(system_prompt, user_prompt, model, max_tokens, temperature)
 
 
-def generate_cold_message(
+async def generate_cold_message(
     system_prompt: str,
     user_prompt: str,
     model: str | None = None,
 ) -> GenerationResult | GenerationError:
     """Generate a cold outreach message (higher creativity, max 200 characters)."""
-    return generate_message(
+    return await generate_message(
         system_prompt=system_prompt,
         user_prompt=user_prompt,
         model=model,
@@ -331,13 +331,13 @@ def generate_cold_message(
     )
 
 
-def generate_followup_message(
+async def generate_followup_message(
     system_prompt: str,
     user_prompt: str,
     model: str | None = None,
 ) -> GenerationResult | GenerationError:
     """Generate a follow-up message (lower creativity, 200-300 words)."""
-    return generate_message(
+    return await generate_message(
         system_prompt=system_prompt,
         user_prompt=user_prompt,
         model=model,
