@@ -28,12 +28,11 @@ export function ContactDetailDialog({
   const { data: contact } = useContact(contactId ?? "");
   const { data: messagesData } = useContactMessages(contactId ?? "");
   const regenerate = useRegenerateMessage();
+  const [regeneratingType, setRegeneratingType] = useState<string | null>(null);
 
   if (!contact) return null;
 
   const messages = messagesData?.messages ?? [];
-
-  const [regeneratingType, setRegeneratingType] = useState<string | null>(null);
 
   const handleRegenerate = async (messageType: string) => {
     setRegeneratingType(messageType);
