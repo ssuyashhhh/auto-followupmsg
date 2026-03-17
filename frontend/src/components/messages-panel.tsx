@@ -57,7 +57,10 @@ export function MessagesPanel({ campaignId }: MessagesPanelProps) {
   const total = data?.total ?? 0;
   const totalPages = Math.ceil(total / limit);
 
-  const handleRegenerate = async (msg: { contact_id: string; campaign_id: string; message_type: string }) => {
+  const [regeneratingId, setRegeneratingId] = useState<string | null>(null);
+
+  const handleRegenerate = async (msg: { id: string; contact_id: string; campaign_id: string; message_type: string }) => {
+    setRegeneratingId(msg.id);
     try {
       const result = await regenerate.mutateAsync({
         contact_id: msg.contact_id,
@@ -67,6 +70,8 @@ export function MessagesPanel({ campaignId }: MessagesPanelProps) {
       toast.success(`Regenerating (Task: ${result.task_id.slice(0, 8)}...)`);
     } catch (err) {
       toast.error(`Failed to regenerate: ${typeof err === "object" ? JSON.stringify(err) : String(err)}`);
+    } finally {
+      setRegeneratingId(null);
     }
   };
 
@@ -136,9 +141,9 @@ export function MessagesPanel({ campaignId }: MessagesPanelProps) {
                     variant="ghost"
                     size="sm"
                     onClick={() => handleRegenerate(message)}
-                    disabled={regenerate.isPending}
+                    disabled={regeneratingId === message.id}
                   >
-                    <RefreshCw className={`mr-1 h-3 w-3 ${regenerate.isPending ? "animate-spin" : ""}`} />
+                    <RefreshCw className={`mr-1 h-3 w-3 ${regeneratingId === message.id ? "animate-spin" : ""}`} />
                     Regen
                   </Button>
                 </div>

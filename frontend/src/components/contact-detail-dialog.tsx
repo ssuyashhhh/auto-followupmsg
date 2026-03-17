@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useContact, useContactMessages, useRegenerateMessage } from "@/lib/hooks";
 import { toast } from "sonner";
 import {
@@ -32,7 +33,10 @@ export function ContactDetailDialog({
 
   const messages = messagesData?.messages ?? [];
 
+  const [regeneratingType, setRegeneratingType] = useState<string | null>(null);
+
   const handleRegenerate = async (messageType: string) => {
+    setRegeneratingType(messageType);
     try {
       const result = await regenerate.mutateAsync({
         contact_id: contact.id,
@@ -42,6 +46,8 @@ export function ContactDetailDialog({
       toast.success(`Regenerating message (Task: ${result.task_id.slice(0, 8)}...)`);
     } catch {
       toast.error("Failed to regenerate");
+    } finally {
+      setRegeneratingType(null);
     }
   };
 
@@ -115,9 +121,9 @@ export function ContactDetailDialog({
                         variant="ghost"
                         size="sm"
                         onClick={() => handleRegenerate(message.message_type)}
-                        disabled={regenerate.isPending}
+                        disabled={regeneratingType === message.message_type}
                       >
-                        <RefreshCw className={`mr-1 h-3 w-3 ${regenerate.isPending ? "animate-spin" : ""}`} />
+                        <RefreshCw className={`mr-1 h-3 w-3 ${regeneratingType === message.message_type ? "animate-spin" : ""}`} />
                         Regenerate
                       </Button>
                     </div>
