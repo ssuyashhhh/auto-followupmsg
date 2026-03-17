@@ -59,7 +59,7 @@ async def list_contacts(
         sort_order=sort_order,
     )
     return ContactListResponse(
-        contacts=page.contacts,
+        contacts=page.contacts,  # pyright: ignore[reportArgumentType]
         total=page.total,
         has_more=page.has_more,
     )

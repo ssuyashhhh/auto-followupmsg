@@ -68,7 +68,7 @@ async def list_uploads(
         .order_by(Upload.created_at.desc())
     )
     uploads = list(result.scalars().all())
-    return UploadListResponse(uploads=uploads, total=len(uploads))
+    return UploadListResponse(uploads=uploads, total=len(uploads))  # pyright: ignore[reportArgumentType]
 
 
 @router.get("/{upload_id}", response_model=UploadResponse)

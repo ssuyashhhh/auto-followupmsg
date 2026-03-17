@@ -316,12 +316,13 @@ def parse_file(content: bytes, file_type: str) -> ParseResult:
         )
 
     # 2. Map columns
-    column_mapping = map_columns(list(df.columns))
+    headers: list[str] = [str(c) for c in df.columns]
+    column_mapping = map_columns(headers)
     logger.info("Column mapping: %s", column_mapping)
 
     if not column_mapping:
         # If no columns match, use first column as name
-        first_col = df.columns[0]
+        first_col = str(df.columns[0])
         column_mapping = {first_col: "full_name"}
         logger.warning("No column patterns matched. Using '%s' as full_name.", first_col)
 
@@ -342,7 +343,7 @@ def parse_file(content: bytes, file_type: str) -> ParseResult:
 
     for idx, row in df.iterrows():
         row_dict = row.to_dict()
-        result = parse_row(row_dict, column_mapping, int(idx) + 2)  # +2 for header + 0-index
+        result = parse_row(row_dict, column_mapping, int(str(idx)) + 2)  # +2 for header + 0-index
 
         if isinstance(result, str):
             errors.append(result)

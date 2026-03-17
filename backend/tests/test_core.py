@@ -111,7 +111,7 @@ class TestUserSchemas:
             UserCreate(email="not-an-email", password="secret", full_name="Test")
 
     def test_token_schema(self):
-        t = Token(access_token="abc.def.ghi")
+        t = Token(access_token="abc.def.ghi", refresh_token="jkl.mno.pqr")
         assert t.access_token == "abc.def.ghi"
         assert t.token_type == "bearer"
 

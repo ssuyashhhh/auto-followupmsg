@@ -58,7 +58,7 @@ async def list_campaigns(
     )
     campaigns = list(result.scalars().all())
 
-    return CampaignListResponse(campaigns=campaigns, total=total)
+    return CampaignListResponse(campaigns=campaigns, total=total)  # pyright: ignore[reportArgumentType]
 
 
 @router.get("/{campaign_id}", response_model=CampaignResponse)

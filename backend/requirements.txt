@@ -11,7 +11,7 @@ pydantic-settings==2.7.1
 # ============================================
 sqlalchemy[asyncio]==2.0.36
 asyncpg==0.30.0
-psycopg2-binary==2.9.10
+# psycopg2-binary==2.9.10  # Commented out for Windows; fails to build wheel
 alembic==1.14.1
 greenlet==3.1.1
 
@@ -26,10 +26,10 @@ python-multipart==0.0.20
 # ============================================
 # File Parsing
 # ============================================
-pandas==2.2.3
+pandas  # Relaxed version requirement to avoid missing wheel build errors
 openpyxl==3.1.5
 xlrd==2.0.1
-python-magic==0.4.27  # MIME detection (use python-magic-bin on Windows)
+python-magic-bin==0.4.14  # MIME detection (use python-magic-bin on Windows)
 
 # ============================================
 # AI

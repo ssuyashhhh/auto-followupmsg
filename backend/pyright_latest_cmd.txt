@@ -1,0 +1,11 @@
+c:\auto follow ups\backend\app\routers\auth.py
+  c:\auto follow ups\backend\app\routers\auth.py:18:6 - warning: Import "jose" could not be resolved from source (reportMissingModuleSource)
+  c:\auto follow ups\backend\app\routers\auth.py:18:28 - warning: Import "jose.jwt" could not be resolved from source (reportMissingModuleSource)
+c:\auto follow ups\backend\app\utils\auth.py
+  c:\auto follow ups\backend\app\utils\auth.py:6:6 - warning: Import "jose" could not be resolved from source (reportMissingModuleSource)
+  c:\auto follow ups\backend\app\utils\auth.py:6:28 - warning: Import "jose.jwt" could not be resolved from source (reportMissingModuleSource)
+  c:\auto follow ups\backend\app\utils\auth.py:7:6 - warning: Import "passlib.context" could not be resolved from source (reportMissingModuleSource)
+c:\auto follow ups\backend\tests\test_auth.py
+  c:\auto follow ups\backend\tests\test_auth.py:11:6 - warning: Import "jose" could not be resolved from source (reportMissingModuleSource)
+  c:\auto follow ups\backend\tests\test_auth.py:11:18 - warning: Import "jose.jwt" could not be resolved from source (reportMissingModuleSource)
+0 errors, 7 warnings, 0 informations

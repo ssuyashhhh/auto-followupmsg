@@ -35,7 +35,7 @@ async def list_messages(
     messages, total = await message_service.list_campaign_messages(
         db, campaign_id, current_user.id, message_type, active_only, skip, limit
     )
-    return MessageListResponse(messages=messages, total=total)
+    return MessageListResponse(messages=messages, total=total)  # pyright: ignore[reportArgumentType]
 
 
 @router.get("/campaign/{campaign_id}/stats", response_model=GenerationStatsResponse)
@@ -61,7 +61,7 @@ async def list_contact_messages(
     messages = await message_service.list_contact_messages(
         db, contact_id, current_user.id
     )
-    return MessageListResponse(messages=messages, total=len(messages))
+    return MessageListResponse(messages=messages, total=len(messages))  # pyright: ignore[reportArgumentType]
 
 
 @router.get("/{message_id}", response_model=MessageResponse)

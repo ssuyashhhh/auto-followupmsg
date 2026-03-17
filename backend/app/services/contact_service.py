@@ -230,7 +230,7 @@ async def bulk_update_status(
         .values(status=new_status)
     )
     await db.flush()
-    return result.rowcount
+    return result.rowcount  # pyright: ignore[reportAttributeAccessIssue]
 
 
 async def delete_contact(
@@ -261,7 +261,7 @@ async def bulk_delete_contacts(
         )
     )
     await db.flush()
-    return result.rowcount
+    return result.rowcount  # pyright: ignore[reportAttributeAccessIssue]
 
 
 async def delete_contacts_by_upload(
@@ -277,4 +277,4 @@ async def delete_contacts_by_upload(
         )
     )
     await db.flush()
-    return result.rowcount
+    return result.rowcount  # pyright: ignore[reportAttributeAccessIssue]
