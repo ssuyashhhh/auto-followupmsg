@@ -68,9 +68,15 @@ npm run dev
 | `REDIS_URL` | Redis connection string |
 | `OPENAI_API_KEY` | OpenAI API key |
 | `ANTHROPIC_API_KEY` | Anthropic API key |
+| `GROQ_API_KEY` | Groq API key (optional) |
+| `DEFAULT_AI_MODEL` | Default fallback AI model (e.g. llama-3.3-70b-versatile) |
 | `SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_KEY` | Supabase anon key |
+| `SUPABASE_BUCKET` | Supabase storage bucket name (e.g. `uploads`) |
 | `SECRET_KEY` | JWT signing secret |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | Access Token Expiry (default: 30) |
+| `REFRESH_TOKEN_EXPIRE_DAYS` | Refresh Token Expiry (default: 7) |
+| `MAX_FILE_SIZE_MB` | File Upload Limit (default: 10) |
 
 ### Frontend (`frontend/.env.local`)
 
@@ -170,8 +176,10 @@ auto follow ups/
    | `REDIS_URL` | Upstash `rediss://` URL (from Step 2) |
    | `SUPABASE_URL` | `https://[ref].supabase.co` |
    | `SUPABASE_KEY` | Supabase anon key |
+   | `SUPABASE_BUCKET` | `uploads` |
    | `OPENAI_API_KEY` | Your OpenAI key |
    | `ANTHROPIC_API_KEY` | Your Anthropic key (optional) |
+   | `GROQ_API_KEY` | Your Groq key (optional) |
    | `SECRET_KEY` | Run: `python -c "import secrets; print(secrets.token_urlsafe(64))"` |
    | `FRONTEND_URL` | Your Vercel URL (set after Step 4) |
 
