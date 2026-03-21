@@ -60,7 +60,7 @@ def _get_sync_engine():
         _sync_url = settings.database_url.replace("+asyncpg", "+pg8000")
         _sync_connect_args: dict = {}
         if _is_remote_db:
-            _sync_connect_args["sslmode"] = "require"
+            _sync_connect_args["ssl_context"] = True
         _sync_engine = create_engine(
             _sync_url,
             echo=settings.debug,
