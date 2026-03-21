@@ -57,7 +57,7 @@ _SyncSessionLocal = None
 def _get_sync_engine():
     global _sync_engine
     if _sync_engine is None:
-        _sync_url = settings.database_url.replace("+asyncpg", "+psycopg2")
+        _sync_url = settings.database_url.replace("+asyncpg", "+pg8000")
         _sync_connect_args: dict = {}
         if _is_remote_db:
             _sync_connect_args["sslmode"] = "require"
