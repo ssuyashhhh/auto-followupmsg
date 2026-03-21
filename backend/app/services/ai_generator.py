@@ -111,10 +111,9 @@ async def _generate_openai(
     temperature: float = 0.7,
 ) -> GenerationResult | GenerationError:
     """Generate message using OpenAI API."""
-    client = AsyncOpenAI(api_key=settings.openai_api_key)
-
     start_time = time.time()
     try:
+        client = AsyncOpenAI(api_key=settings.openai_api_key)
         response = await client.chat.completions.create(
             model=model,
             messages=[
@@ -172,10 +171,9 @@ async def _generate_claude(
     temperature: float = 0.7,
 ) -> GenerationResult | GenerationError:
     """Generate message using Anthropic Claude API."""
-    client = AsyncAnthropic(api_key=settings.anthropic_api_key)
-
     start_time = time.time()
     try:
+        client = AsyncAnthropic(api_key=settings.anthropic_api_key)
         response = await client.messages.create(
             model=model,
             max_tokens=max_tokens,
@@ -231,10 +229,9 @@ async def _generate_groq(
     temperature: float = 0.7,
 ) -> GenerationResult | GenerationError:
     """Generate message using Groq API (OpenAI-compatible)."""
-    client = AsyncGroq(api_key=settings.groq_api_key)
-
     start_time = time.time()
     try:
+        client = AsyncGroq(api_key=settings.groq_api_key)
         response = await client.chat.completions.create(
             model=model,
             messages=[
