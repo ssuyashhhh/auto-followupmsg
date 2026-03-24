@@ -1,0 +1,12 @@
+[build]
+  # Point Netlify to the frontend directory inside the repo
+  base = "frontend"
+  
+  # Standard Next.js build command
+  command = "npm run build"
+  
+  # Next.js exports the build to the .next directory
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
