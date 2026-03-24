@@ -23,7 +23,7 @@ Person Name: {{name}}
 LinkedIn URL: {{linkedin_url}}
 Person Position: {{role}}
 Company Name: {{company}}
-User Custom Message / Context: {{notes}}
+User Custom Message / Context: {{custom_instructions}}
 
 Generate ONLY the Cold Email text. Evolve the conversation, make it feel human, intentional, and written specifically for that one person.'
 WHERE is_system = TRUE AND message_type = 'cold_outreach';
@@ -45,7 +45,7 @@ FOLLOWUP LOGIC:
 Person Name: {{name}}
 Person Position: {{role}}
 Company Name: {{company}}
-User Custom Message / Context: {{notes}}
+User Custom Message / Context: {{custom_instructions}}
 
 Original message sent:
 {{previous_message}}

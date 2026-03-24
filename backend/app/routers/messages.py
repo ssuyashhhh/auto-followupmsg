@@ -133,6 +133,7 @@ async def generate_messages_bulk(
         message_type=data.message_type.value,
         model=data.model,
         template_id=str(data.prompt_template_id) if data.prompt_template_id else None,
+        custom_instructions=data.custom_instructions,
     )
 
     return GenerationTaskResponse(
@@ -177,6 +178,7 @@ async def regenerate_message(
         message_type=data.message_type.value,
         model=data.model,
         prompt_template_id=str(data.prompt_template_id) if data.prompt_template_id else None,
+        custom_instructions=data.custom_instructions,
     )
 
     return GenerationTaskResponse(

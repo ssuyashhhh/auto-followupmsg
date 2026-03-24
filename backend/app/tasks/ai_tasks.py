@@ -34,6 +34,7 @@ def generate_messages_for_campaign(
     message_type: str,
     model: str | None = None,
     template_id: str | None = None,
+    custom_instructions: str | None = None,
 ):
     """
     Generate AI messages for a batch of contacts in a campaign.
@@ -102,6 +103,7 @@ def generate_messages_for_campaign(
                 previous_message=previous_message,
                 template=template,
                 user=user,
+                custom_instructions=custom_instructions,
             )
 
             if prompts:
@@ -182,6 +184,7 @@ def regenerate_single_message(
     message_type: str,
     model: str | None = None,
     prompt_template_id: str | None = None,
+    custom_instructions: str | None = None,
 ):
     """
     Regenerate a message for a single contact.
@@ -224,6 +227,7 @@ def regenerate_single_message(
             message_type=msg_type,
             template_id=tmpl_id,
             previous_message=previous_message,
+            custom_instructions=custom_instructions,
         )
 
         if not prompts:

@@ -32,6 +32,7 @@ SUPPORTED_VARIABLES = {
     "previous_messages",
     "sender_name",
     "sender_company",
+    "custom_instructions",
 }
 
 # Pattern to match {{variable_name}}
@@ -95,6 +96,7 @@ def build_contact_variables(
     previous_messages: str | None = None,
     sender_name: str | None = None,
     sender_company: str | None = None,
+    custom_instructions: str | None = None,
 ) -> dict[str, str | None]:
     """Build the standard variables dict for a contact."""
     return {
@@ -108,6 +110,7 @@ def build_contact_variables(
         "previous_messages": previous_messages,
         "sender_name": sender_name,
         "sender_company": sender_company,
+        "custom_instructions": custom_instructions,
     }
 
 

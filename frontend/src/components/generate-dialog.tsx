@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
@@ -50,6 +51,10 @@ const AI_MODELS = [
   { value: "claude-3-opus", label: "Claude 3 Opus" },
   { value: "claude-3-sonnet", label: "Claude 3 Sonnet" },
   { value: "claude-3-haiku", label: "Claude 3 Haiku" },
+  { value: "deepseek-chat", label: "DeepSeek V3" },
+  { value: "deepseek-reasoner", label: "DeepSeek R1" },
+  { value: "o1-mini", label: "OpenAI o1-mini" },
+  { value: "o1-preview", label: "OpenAI o1-preview" },
 ];
 
 interface GenerateDialogProps {
@@ -66,6 +71,7 @@ export function GenerateDialog({
   const [messageType, setMessageType] = useState("cold_outreach");
   const [model, setModel] = useState("llama-3.3-70b-versatile");
   const [templateId, setTemplateId] = useState<string>("default");
+  const [customInstructions, setCustomInstructions] = useState<string>("");
   const [taskId, setTaskId] = useState<string | null>(null);
 
   const { data: templatesData } = usePromptTemplates(messageType);
@@ -89,6 +95,7 @@ export function GenerateDialog({
         message_type: messageType,
         model,
         prompt_template_id: templateId === "default" ? undefined : templateId,
+        custom_instructions: customInstructions || undefined,
       });
       setTaskId(result.task_id);
       toast.success(`Generation started for ${result.contact_count} contacts`);
@@ -162,6 +169,20 @@ export function GenerateDialog({
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Custom Instructions (Optional)</Label>
+                <Textarea 
+                  placeholder="e.g. Mention our new Series B funding round..."
+                  value={customInstructions}
+                  onChange={(e) => setCustomInstructions(e.target.value)}
+                  className="resize-none"
+                  rows={3}
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Variables injected directly into the template ({"{{custom_instructions}}"})
+                </p>
               </div>
             </div>
 

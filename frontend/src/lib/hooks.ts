@@ -173,7 +173,7 @@ export function useGenerationStats(campaignId: string) {
 
 export function useGenerateMessages() {
   const qc = useQueryClient();
-  return useMutation<GenerationTaskResponse, Error, { campaign_id: string; message_type?: string; model?: string; prompt_template_id?: string }>({
+  return useMutation<GenerationTaskResponse, Error, { campaign_id: string; message_type?: string; model?: string; prompt_template_id?: string; custom_instructions?: string }>({
     mutationFn: (data) =>
       api.post("/messages/generate", data).then((r) => r.data),
     onSuccess: (_, vars) => {
@@ -184,7 +184,7 @@ export function useGenerateMessages() {
 
 export function useRegenerateMessage() {
   const qc = useQueryClient();
-  return useMutation<GenerationTaskResponse, Error, { contact_id: string; campaign_id: string; message_type?: string; model?: string; prompt_template_id?: string }>({
+  return useMutation<GenerationTaskResponse, Error, { contact_id: string; campaign_id: string; message_type?: string; model?: string; prompt_template_id?: string; custom_instructions?: string }>({
     mutationFn: (data) =>
       api.post("/messages/regenerate", data).then((r) => r.data),
     onSuccess: (_, vars) => {

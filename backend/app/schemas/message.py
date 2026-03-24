@@ -37,6 +37,7 @@ class MessageRegenerateRequest(BaseModel):
     campaign_id: uuid.UUID
     message_type: MessageType = MessageType.COLD_OUTREACH
     prompt_template_id: uuid.UUID | None = None
+    custom_instructions: str | None = Field(None, description="Custom prompt instructions provided at generation time")
     model: str | None = Field(None, description="AI model override (e.g. gpt-4o, claude-3-5-sonnet-20241022)")
 
 
@@ -45,6 +46,7 @@ class MessageGenerateBulkRequest(BaseModel):
     message_type: MessageType = MessageType.COLD_OUTREACH
     model: str | None = Field(None, description="AI model override")
     prompt_template_id: uuid.UUID | None = Field(None, description="Custom template to use")
+    custom_instructions: str | None = Field(None, description="Custom prompt instructions provided at generation time")
 
 
 class GenerationTaskResponse(BaseModel):

@@ -173,6 +173,7 @@ def build_prompts_for_contact(
     previous_message: str | None = None,
     template=None,
     user=None,
+    custom_instructions: str | None = None,
 ) -> tuple[str, str, str] | None:
     """
     Build system and user prompts for a contact.
@@ -207,6 +208,7 @@ def build_prompts_for_contact(
         previous_message=previous_message,
         sender_name=user.full_name if user else None,
         sender_company=user.company if user else None,
+        custom_instructions=custom_instructions,
     )
 
     system_prompt = render_template(template.system_prompt, variables)

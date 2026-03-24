@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RefreshCw, Mail, Building, Briefcase, ExternalLink } from "lucide-react";
 
@@ -29,6 +30,7 @@ export function ContactDetailDialog({
   const { data: messagesData } = useContactMessages(contactId ?? "");
   const regenerate = useRegenerateMessage();
   const [regeneratingType, setRegeneratingType] = useState<string | null>(null);
+  const [customInstructions, setCustomInstructions] = useState<string>("");
 
   if (!contact) return null;
 
@@ -41,6 +43,7 @@ export function ContactDetailDialog({
         contact_id: contact.id,
         campaign_id: contact.campaign_id,
         message_type: messageType,
+        custom_instructions: customInstructions || undefined,
       });
       toast.success(`Regenerating message (Task: ${result.task_id.slice(0, 8)}...)`);
     } catch {
@@ -96,6 +99,19 @@ export function ContactDetailDialog({
             {contact.notes}
           </div>
         )}
+
+        {/* Regeneration Settings */}
+        <div className="space-y-2 pt-2 pb-2">
+          <h4 className="font-semibold text-sm">Regeneration Instructions</h4>
+          <p className="text-xs text-muted-foreground">Add specific context or instructions before clicking regenerate on any message below.</p>
+          <Textarea 
+             className="text-sm resize-none"
+             placeholder="E.g., mention our new Series A funding round..."
+             value={customInstructions}
+             onChange={(e) => setCustomInstructions(e.target.value)}
+             rows={2}
+          />
+        </div>
 
         {/* Messages */}
         <div className="space-y-3">
