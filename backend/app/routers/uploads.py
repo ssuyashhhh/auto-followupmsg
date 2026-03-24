@@ -130,3 +130,21 @@ async def get_upload_stats(
         ),
         "error_message": upload.error_message,
     }
+
+
+@router.delete("/{upload_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_upload_record(
+    upload_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Permanently delete an upload.
+    This wipes the raw file from storage, all contacts imported from this file,
+    and the upload record itself.
+    """
+    from app.services.upload_service import delete_upload
+    
+    success = await delete_upload(db, upload_id, current_user.id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Upload not found")

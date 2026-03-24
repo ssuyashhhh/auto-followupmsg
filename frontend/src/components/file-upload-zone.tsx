@@ -3,11 +3,12 @@
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import { FileUp, File, CheckCircle, XCircle, Clock, Loader2 } from "lucide-react";
+import { FileUp, File, CheckCircle, XCircle, Clock, Loader2, Trash2 } from "lucide-react";
 
-import { useCampaignUploads, useUploadFile } from "@/lib/hooks";
+import { useCampaignUploads, useUploadFile, useDeleteUpload } from "@/lib/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 const ACCEPTED = {
   "text/csv": [".csv"],
@@ -26,6 +27,7 @@ const statusIcon: Record<string, React.ReactNode> = {
 export function FileUploadZone({ campaignId }: { campaignId: string }) {
   const { data } = useCampaignUploads(campaignId);
   const uploadFile = useUploadFile();
+  const deleteUpload = useDeleteUpload();
 
   const onDrop = useCallback(
     async (acceptedFiles: globalThis.File[]) => {
@@ -120,6 +122,22 @@ export function FileUploadZone({ campaignId }: { campaignId: string }) {
                     >
                       {upload.status}
                     </Badge>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className="ml-2 h-8 w-8 text-muted-foreground hover:text-destructive"
+                      onClick={() => {
+                        if (window.confirm("Are you sure you want to permanently delete this upload and all contacts generated from it?")) {
+                          deleteUpload.mutate(upload.id, {
+                            onSuccess: () => toast.success("Upload deleted successfully"),
+                            onError: () => toast.error("Failed to delete upload")
+                          });
+                        }
+                      }}
+                      disabled={deleteUpload.isPending}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               ))}

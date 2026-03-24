@@ -9,6 +9,7 @@ Responsibilities:
 """
 
 import logging
+import random
 import time
 from dataclasses import dataclass
 
@@ -99,6 +100,16 @@ def get_default_model() -> str:
     return settings.default_ai_model
 
 
+def _get_random_api_key(key_str: str | None) -> str | None:
+    """Safely split a comma-separated API key string and pick a random key."""
+    if not key_str:
+        return None
+    keys = [k.strip() for k in key_str.split(",") if k.strip()]
+    if not keys:
+        return None
+    return random.choice(keys)
+
+
 # ============================================
 # OpenAI Provider
 # ============================================
@@ -113,7 +124,8 @@ async def _generate_openai(
     """Generate message using OpenAI API."""
     start_time = time.time()
     try:
-        client = AsyncOpenAI(api_key=settings.openai_api_key)
+        api_key = _get_random_api_key(settings.openai_api_key)
+        client = AsyncOpenAI(api_key=api_key)
         response = await client.chat.completions.create(
             model=model,
             messages=[
@@ -173,7 +185,8 @@ async def _generate_claude(
     """Generate message using Anthropic Claude API."""
     start_time = time.time()
     try:
-        client = AsyncAnthropic(api_key=settings.anthropic_api_key)
+        api_key = _get_random_api_key(settings.anthropic_api_key)
+        client = AsyncAnthropic(api_key=api_key)
         response = await client.messages.create(
             model=model,
             max_tokens=max_tokens,
@@ -231,7 +244,8 @@ async def _generate_groq(
     """Generate message using Groq API (OpenAI-compatible)."""
     start_time = time.time()
     try:
-        client = AsyncGroq(api_key=settings.groq_api_key)
+        api_key = _get_random_api_key(settings.groq_api_key)
+        client = AsyncGroq(api_key=api_key)
         response = await client.chat.completions.create(
             model=model,
             messages=[

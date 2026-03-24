@@ -10,7 +10,7 @@ from app.config import settings
 from app.models.campaign import Campaign
 from app.models.enums import UploadStatus
 from app.models.upload import Upload
-from app.utils.storage import upload_file_to_storage
+from app.utils.storage import delete_file_from_storage, upload_file_to_storage
 
 
 ALLOWED_EXTENSIONS: set[str] = {"csv", "txt", "xlsx", "xls"}
@@ -266,3 +266,41 @@ async def process_upload(
     task = parse_uploaded_file.delay(str(upload.id))  # pyright: ignore[reportFunctionMemberAccess]
 
     return UploadResult(upload=upload, task_id=task.id)
+
+
+async def delete_upload(
+    db: AsyncSession,
+    upload_id: uuid.UUID,
+    user_id: uuid.UUID,
+) -> bool:
+    """
+    Delete an upload completely:
+    1. Delete raw file from storage bucket.
+    2. Cascade delete all imported contacts.
+    3. Delete the Upload DB record.
+    """
+    result = await db.execute(
+        select(Upload).where(Upload.id == upload_id, Upload.user_id == user_id)
+    )
+    upload = result.scalar_one_or_none()
+    if not upload:
+        return False
+
+    # 1. Delete raw file
+    import logging
+    
+    logger = logging.getLogger(__name__)
+    try:
+        if upload.storage_path:
+            await delete_file_from_storage(upload.storage_path)
+    except Exception as e:
+        logger.warning("Failed to delete raw file for %s from storage: %s", upload_id, str(e))
+
+    # 2. Delete imported contacts
+    from app.services.contact_service import delete_contacts_by_upload
+    await delete_contacts_by_upload(db, upload_id, user_id)
+
+    # 3. Delete DB record
+    await db.delete(upload)
+    await db.flush()
+    return True
