@@ -1,6 +1,6 @@
 # Auto Follow-Ups — AI Cold Outreach Generator
 
-Full-stack application for generating personalized cold outreach messages and automated follow-ups using AI (OpenAI GPT / Anthropic Claude).
+Full-stack application for generating personalized cold outreach messages and automated follow-ups using AI (OpenAI, Anthropic Claude, Groq, DeepSeek).
 
 ## Architecture
 
@@ -66,9 +66,9 @@ npm run dev
 |---|---|
 | `DATABASE_URL` | PostgreSQL connection string (asyncpg) |
 | `REDIS_URL` | Redis connection string |
-| `OPENAI_API_KEY` | OpenAI API key |
-| `ANTHROPIC_API_KEY` | Anthropic API key |
-| `GROQ_API_KEY` | Groq API key (optional) |
+| `OPENAI_API_KEY` | OpenAI API key(s) — comma-separated for load balancing |
+| `ANTHROPIC_API_KEY` | Anthropic API key(s) — comma-separated for load balancing |
+| `GROQ_API_KEY` | Groq API key(s) — comma-separated for load balancing |
 | `DEFAULT_AI_MODEL` | Default fallback AI model (e.g. llama-3.3-70b-versatile) |
 | `SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_KEY` | Supabase anon key |
@@ -87,12 +87,14 @@ npm run dev
 ## Features
 
 - **CSV/Excel/TXT Upload** — Parse contact files, map columns automatically
-- **AI Message Generation** — GPT-4o, Claude 3.5 Sonnet, and more
+- **AI Message Generation** — GPT-4o, Claude 3.5 Sonnet, Llama 3.3, DeepSeek, o1, and more
+- **User-Driven Prompts** — You write the instructions, the AI generates personalized messages using your contacts' details
 - **Follow-up Chains** — Automated follow-up scheduling (3/5/7 day delays)
-- **Prompt Templates** — Custom system/user prompts with variable substitution
 - **Campaign Management** — Draft, active, paused, completed workflows
 - **Real-time Task Tracking** — Celery task progress via polling
 - **Message Regeneration** — Re-generate individual messages with model override
+- **API Key Load Balancing** — Comma-separated API keys are randomly rotated to avoid rate limits
+- **Upload Deletion** — Delete uploaded files and all associated contacts in one click
 
 ## Project Structure
 
@@ -177,9 +179,9 @@ auto follow ups/
    | `SUPABASE_URL` | `https://[ref].supabase.co` |
    | `SUPABASE_KEY` | Supabase anon key |
    | `SUPABASE_BUCKET` | `uploads` |
-   | `OPENAI_API_KEY` | Your OpenAI key |
-   | `ANTHROPIC_API_KEY` | Your Anthropic key (optional) |
-   | `GROQ_API_KEY` | Your Groq key (optional) |
+   | `OPENAI_API_KEY` | Your OpenAI key(s) — comma-separated for load balancing |
+   | `ANTHROPIC_API_KEY` | Your Anthropic key(s) (optional) |
+   | `GROQ_API_KEY` | Your Groq key(s) (optional) |
    | `SECRET_KEY` | Run: `python -c "import secrets; print(secrets.token_urlsafe(64))"` |
    | `FRONTEND_URL` | Your Vercel URL (set after Step 4) |
 
