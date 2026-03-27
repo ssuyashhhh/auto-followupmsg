@@ -9,6 +9,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 import { useCreateCampaign } from "@/lib/hooks";
+import { TopNav } from "@/components/top-nav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,8 +45,11 @@ export default function NewCampaignPage() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="min-h-screen flex flex-col">
+      <TopNav />
+      <main className="flex-1 pt-32 pb-20 px-4 sm:px-8 max-w-7xl mx-auto w-full relative">
+        <div className="mx-auto max-w-2xl space-y-6">
+          <div className="flex items-center gap-4">
         <Link href="/campaigns">
           <Button variant="ghost" size="icon">
             <ArrowLeft className="h-4 w-4" />
@@ -84,6 +88,8 @@ export default function NewCampaignPage() {
           </form>
         </CardContent>
       </Card>
+      </div>
+      </main>
     </div>
   );
 }

@@ -22,6 +22,7 @@ import {
 } from "@/lib/hooks";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { TopNav } from "@/components/top-nav";
 import {
   Card,
   CardContent,
@@ -103,9 +104,11 @@ export default function CampaignDetailPage({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+    <div className="min-h-screen flex flex-col">
+      <TopNav />
+      <main className="flex-1 pt-32 pb-20 px-4 sm:px-8 max-w-7xl mx-auto w-full space-y-6 relative">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div className="flex items-start gap-4">
           <Link href="/campaigns">
             <Button variant="ghost" size="icon" className="h-10 w-10 mt-1 hover:bg-surface-container-highest rounded-full">
@@ -243,6 +246,7 @@ export default function CampaignDetailPage({
         open={generateOpen}
         onOpenChange={setGenerateOpen}
       />
+      </main>
     </div>
   );
 }

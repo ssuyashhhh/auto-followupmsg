@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Auto Follow-Ups | Generate Messages</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "background": "#060e20",
+              "on-tertiary-fixed": "#00363e",
+              "on-error": "#490013",
+              "secondary-dim": "#be83fa",
+              "error": "#ff6e84",
+              "on-background": "#dee5ff",
+              "primary-container": "#8d98ff",
+              "on-surface-variant": "#a3aac4",
+              "surface-bright": "#1f2b49",
+              "surface-tint": "#9fa7ff",
+              "surface-container-highest": "#192540",
+              "inverse-on-surface": "#4d556b",
+              "surface-container-lowest": "#000000",
+              "tertiary-container": "#3adffa",
+              "surface": "#060e20",
+              "surface-variant": "#192540",
+              "surface-container-low": "#091328",
+              "primary-fixed": "#8d98ff",
+              "on-primary-container": "#000a7b",
+              "surface-container-high": "#141f38",
+              "on-secondary-fixed-variant": "#6c31a5",
+              "on-secondary-fixed": "#4e0487",
+              "primary": "#9fa7ff",
+              "secondary-fixed": "#e4c6ff",
+              "secondary": "#be83fa",
+              "on-secondary-container": "#e4c4ff",
+              "surface-container": "#0f1930",
+              "outline": "#6d758c",
+              "primary-dim": "#8a95ff",
+              "primary-fixed-dim": "#7f8af6",
+              "tertiary-dim": "#1ad0eb",
+              "secondary-fixed-dim": "#dbb4ff",
+              "on-primary": "#101b8b",
+              "on-secondary": "#32005b",
+              "tertiary-fixed": "#3adffa",
+              "inverse-primary": "#4954bc",
+              "secondary-container": "#62259b",
+              "surface-dim": "#060e20",
+              "on-error-container": "#ffb2b9",
+              "tertiary": "#7de9ff",
+              "on-tertiary": "#005561",
+              "on-tertiary-fixed-variant": "#005561",
+              "outline-variant": "#40485d",
+              "on-primary-fixed-variant": "#0c1889",
+              "on-tertiary-container": "#004b56",
+              "error-dim": "#d73357",
+              "on-surface": "#dee5ff",
+              "error-container": "#a70138",
+              "on-primary-fixed": "#000000",
+              "inverse-surface": "#faf8ff",
+              "tertiary-fixed-dim": "#1ad0eb"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #060e20; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { background: rgba(15, 25, 48, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(64, 72, 93, 0.15); }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen overflow-hidden">
+<!-- Background Layer (Simulated Dashboard) -->
+<div class="fixed inset-0 z-0 opacity-40 blur-md pointer-events-none scale-105">
+<div class="grid grid-cols-12 gap-6 p-8">
+<div class="col-span-3 h-screen bg-surface-container-low rounded-xl"></div>
+<div class="col-span-9 space-y-6">
+<div class="h-16 bg-surface-container-high rounded-xl w-full"></div>
+<div class="grid grid-cols-3 gap-6">
+<div class="h-40 bg-surface-container rounded-xl"></div>
+<div class="h-40 bg-surface-container rounded-xl"></div>
+<div class="h-40 bg-surface-container rounded-xl"></div>
+</div>
+<div class="h-[600px] bg-surface-container-highest rounded-xl"></div>
+</div>
+</div>
+</div>
+<!-- Top Navigation Anchor -->
+<nav class="fixed top-0 w-full z-50 bg-[#060e20]/80 backdrop-blur-xl border-b border-[#40485d]/15 shadow-[0_8px_32px_-10px_rgba(159,167,255,0.1)] flex justify-between items-center px-8 h-16 w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold bg-gradient-to-r from-[#9fa7ff] to-[#be83fa] bg-clip-text text-transparent font-headline tracking-tight">Auto Follow-Ups</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-[#a3aac4] hover:text-[#dee5ff] transition-colors font-headline text-sm" href="#">Dashboard</a>
+<a class="text-[#9fa7ff] border-b-2 border-[#9fa7ff] pb-1 font-headline text-sm" href="#">Sequences</a>
+<a class="text-[#a3aac4] hover:text-[#dee5ff] transition-colors font-headline text-sm" href="#">Analytics</a>
+<a class="text-[#a3aac4] hover:text-[#dee5ff] transition-colors font-headline text-sm" href="#">Leads</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-[#1f2b49]/50 p-2 rounded-full transition-all duration-200">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-[#1f2b49]/50 p-2 rounded-full transition-all duration-200">settings</button>
+<div class="h-8 w-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="professional user avatar profile picture with neutral background and soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhV88tjYuiUBUe0N6JEIn0murC_1btaIGgP7JjPQHwsO4Rx69oT5tvmQPzRLVATSD51czcXIhIfBBgxOPkD3cverlHgN3QypxhVPTDXXorANAbpypCLy7bW7skdTNHYcximKdJny9J5XN28HKukr1iwbLfkrxK_ebdK8pSiNs93eTCKSxWDMvf0ys690pZlS_uwfpyhAzWZ_bb8-2tra2o8Md3-aVwNg1GuDF8Vg5LFAOJ7KyPWrtpOM-3kbuuh7UyNhuvIJpEGILr"/>
+</div>
+</div>
+</nav>
+<!-- Modal Backdrop Overlay -->
+<div class="fixed inset-0 z-[60] bg-background/60 backdrop-blur-sm flex items-center justify-center p-4">
+<!-- Main Dialog -->
+<div class="glass-panel w-full max-w-2xl rounded-2xl shadow-[0_32px_64px_-10px_rgba(159,167,255,0.15)] overflow-hidden border border-outline-variant/10">
+<!-- Header -->
+<div class="p-8 pb-4 flex justify-between items-start">
+<div>
+<h2 class="font-headline text-2xl font-bold text-on-surface tracking-tight">Generate Messages</h2>
+<p class="text-on-surface-variant body-md mt-1">Design your AI outreach strategy with precision.</p>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-on-surface transition-colors p-1">close</button>
+</div>
+<!-- Content -->
+<div class="p-8 pt-4 space-y-6">
+<!-- Dual Selectors -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-label text-xs uppercase tracking-widest text-on-surface-variant ml-1">Message Type</label>
+<div class="relative">
+<select class="w-full bg-surface-container-highest border-none rounded-xl text-on-surface text-sm py-3 px-4 focus:ring-1 focus:ring-tertiary/50 appearance-none transition-all">
+<option>Cold Outreach</option>
+<option>Follow Up 1</option>
+<option>Follow Up 2</option>
+<option>Follow Up 3</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label text-xs uppercase tracking-widest text-on-surface-variant ml-1">AI Model selection</label>
+<div class="relative">
+<select class="w-full bg-surface-container-highest border-none rounded-xl text-on-surface text-sm py-3 px-4 focus:ring-1 focus:ring-tertiary/50 appearance-none transition-all">
+<option>Ethereal-1 Pro</option>
+<option>GPT-4 Architect</option>
+<option>Neural Flow v2</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">model_training</span>
+</div>
+</div>
+</div>
+<!-- Main Prompt Area -->
+<div class="space-y-2">
+<div class="flex justify-between items-end ml-1">
+<label class="font-label text-xs uppercase tracking-widest text-on-surface-variant">Prompt instructions</label>
+<span class="text-[10px] text-tertiary/60 font-label">Tokens: 124/2048</span>
+</div>
+<div class="relative group">
+<textarea class="w-full bg-surface-container-highest border-none rounded-xl text-on-surface body-md p-5 focus:ring-1 focus:ring-tertiary/50 transition-all placeholder:text-on-surface-variant/30 resize-none" placeholder="Describe the tone, value proposition, and specific call-to-action you want the AI to include in this sequence..." rows="6"></textarea>
+<div class="absolute bottom-4 right-4 flex gap-2">
+<button class="bg-surface-container px-3 py-1.5 rounded-lg text-xs font-medium text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm">magic_button</span>
+                                Enhance
+                            </button>
+</div>
+</div>
+</div>
+<!-- Action Section -->
+<div class="pt-2 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div>
+<p class="text-xs font-semibold text-on-surface">Smart Optimization</p>
+<p class="text-[10px] text-on-surface-variant">AI will auto-adjust for timezone &amp; sentiment</p>
+</div>
+</div>
+<button class="bg-gradient-to-br from-primary to-secondary text-on-primary-fixed font-headline font-bold py-3.5 px-10 rounded-full active:scale-95 transition-all shadow-[0_8px_20px_-4px_rgba(159,167,255,0.4)]">
+                        Generate
+                    </button>
+</div>
+<!-- Generation Status -->
+<div class="space-y-3 pt-4">
+<div class="flex justify-between text-[11px] font-label tracking-wider uppercase text-on-surface-variant px-1">
+<span class="text-tertiary">Status: Processing sequence nodes</span>
+<span>65%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full w-[65%] bg-gradient-to-r from-tertiary-dim to-primary rounded-full relative">
+<div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Meta -->
+<div class="bg-surface-container-low/50 px-8 py-4 flex items-center justify-center border-t border-outline-variant/5">
+<span class="text-[10px] font-label text-on-surface-variant/60 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+                    Encrypted Generation Protocol Active
+                </span>
+</div>
+</div>
+</div>
+<!-- Page Footer (Suppressed for Focus but available for structure) -->
+<footer class="fixed bottom-0 w-full bg-[#060e20] py-6 border-t border-[#40485d]/10 z-40 opacity-30">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 max-w-7xl mx-auto">
+<span class="font-['Inter'] text-xs uppercase tracking-widest text-[#a3aac4]">© 2024 Auto Follow-Ups. Powered by Ethereal Intelligence.</span>
+<div class="flex gap-6 mt-4 md:mt-0">
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-[#a3aac4] hover:text-[#7de9ff] transition-colors" href="#">Privacy Policy</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-[#a3aac4] hover:text-[#7de9ff] transition-colors" href="#">Terms of Service</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-[#a3aac4] hover:text-[#7de9ff] transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+</body></html>

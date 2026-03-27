@@ -7,6 +7,7 @@ import { useCampaigns } from "@/lib/hooks";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { TopNav } from "@/components/top-nav";
 
 const statusColor: Record<string, "default" | "success" | "warning" | "secondary" | "destructive"> = {
   draft: "secondary",
@@ -21,9 +22,11 @@ export default function CampaignsPage() {
   const campaigns = data?.campaigns ?? [];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
+    <div className="min-h-screen flex flex-col">
+      <TopNav />
+      <main className="flex-1 pt-32 pb-20 px-4 sm:px-8 max-w-7xl mx-auto w-full relative">
+        <div className="flex items-center justify-between mb-8">
+          <div>
           <h1 className="text-3xl font-bold">Campaigns</h1>
           <p className="text-muted-foreground">Manage your outreach campaigns</p>
         </div>
@@ -84,6 +87,7 @@ export default function CampaignsPage() {
           ))}
         </div>
       )}
+      </main>
     </div>
   );
 }

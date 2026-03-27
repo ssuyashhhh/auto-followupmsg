@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { FolderOpen, MessageSquare, Users, Plus, ArrowRight } from "lucide-react";
+import { FolderOpen, MessageSquare, Users, Plus, MoreVertical, Edit2, LayoutDashboard, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
 
 import { useCampaigns } from "@/lib/hooks";
-import { useAuthStore } from "@/stores/auth";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { TopNav } from "@/components/top-nav";
 
 const statusColor: Record<string, "default" | "success" | "warning" | "secondary" | "destructive"> = {
   draft: "secondary",
@@ -19,7 +17,6 @@ const statusColor: Record<string, "default" | "success" | "warning" | "secondary
 };
 
 export default function DashboardPage() {
-  const { user } = useAuthStore();
   const { data, isLoading } = useCampaigns();
   const campaigns = data?.campaigns ?? [];
 
@@ -27,138 +24,156 @@ export default function DashboardPage() {
   const totalGenerated = campaigns.reduce((s, c) => s + c.messages_generated, 0);
   const activeCampaigns = campaigns.filter((c) => c.status === "active").length;
 
+  const STATS = [
+    { label: 'Total Campaigns', value: campaigns.length, icon: 'campaign', color: 'primary' },
+    { label: 'Total Contacts', value: totalContacts.toLocaleString(), icon: 'groups', color: 'secondary' },
+    { label: 'Messages Generated', value: totalGenerated.toLocaleString(), icon: 'auto_awesome', color: 'tertiary' }
+  ];
+
   return (
-    <div className="space-y-10 py-6 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-        <div>
-          <h1 className="text-4xl font-extrabold tracking-tight font-headline bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-            Dashboard
-          </h1>
-          <p className="text-on-surface-variant font-medium mt-1">
-            Welcome back, <span className="text-on-surface">{user?.full_name?.split(" ")[0]}</span>
+    <div className="min-h-screen flex flex-col">
+      <TopNav />
+
+      {/* Main Content */}
+      <main className="flex-1 pt-32 pb-20 px-4 sm:px-8 max-w-7xl mx-auto w-full relative">
+        <header className="mb-12">
+          <h1 className="font-headline text-4xl text-on-surface font-extrabold tracking-tight mb-2">Campaign Performance</h1>
+          <p className="text-on-surface-variant text-lg max-w-2xl">
+            Monitor your AI-driven outreach across all active sequences. Let your AI handle the heavy lifting while you focus on closing.
           </p>
+        </header>
+
+        {/* Stats Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          {STATS.map((stat, idx) => (
+            <motion.div 
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              className="glass-card p-6 rounded-[1.5rem] flex items-center justify-between group overflow-hidden relative"
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br from-${stat.color}/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+              <div className="relative z-10">
+                <span className="text-[10px] text-on-surface-variant uppercase tracking-widest block mb-1 font-bold">
+                  {stat.label}
+                </span>
+                <span className="font-headline text-3xl font-bold text-on-surface tracking-tight">
+                  {stat.value}
+                </span>
+              </div>
+              <div className={`relative z-10 w-12 h-12 rounded-[1rem] flex items-center justify-center ${
+                stat.color === 'primary' ? 'bg-primary/10 text-primary' :
+                stat.color === 'secondary' ? 'bg-secondary/10 text-secondary' :
+                'bg-tertiary/10 text-tertiary'
+              }`}>
+                {stat.icon === 'campaign' && <LayoutDashboard className="w-6 h-6" />}
+                {stat.icon === 'groups' && <Users className="w-6 h-6" />}
+                {stat.icon === 'auto_awesome' && <Sparkles className="w-6 h-6" />}
+              </div>
+            </motion.div>
+          ))}
         </div>
-        <Link href="/campaigns/new">
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button className="bg-gradient-to-r from-primary to-secondary text-background font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity border-0 h-11 px-6 rounded-full">
-              <Plus className="mr-2 h-4 w-4" />
-              New Campaign
-            </Button>
-          </motion.div>
-        </Link>
-      </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-6 md:grid-cols-3">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="glass-card bg-surface-container/40 border-outline-variant/30 overflow-hidden relative group">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-label uppercase tracking-wider text-on-surface-variant">Active Campaigns</CardTitle>
-              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <FolderOpen className="h-4 w-4 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-extrabold font-headline text-on-surface">{activeCampaigns}</div>
-              <p className="text-xs text-on-surface-variant mt-1 font-medium">{campaigns.length} total campaigns</p>
-            </CardContent>
-          </Card>
-        </motion.div>
+        {/* Campaign Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {isLoading ? (
+             <div className="col-span-full flex justify-center py-20">
+               <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+             </div>
+          ) : campaigns.map((campaign, idx) => (
+            <Link href={`/campaigns/${campaign.id}`} key={campaign.id}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 + idx * 0.05 }}
+                className="glass-card rounded-[1.5rem] p-6 hover:bg-surface-container-highest/40 transition-all duration-300 group cursor-pointer h-full border border-white/5 hover:border-white/10"
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                    campaign.status === 'active' ? 'bg-secondary/10 text-secondary' :
+                    campaign.status === 'completed' ? 'bg-tertiary/10 text-tertiary' :
+                    'bg-surface-container-highest text-on-surface-variant'
+                  }`}>
+                    {campaign.status === 'active' && <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />}
+                    {campaign.status}
+                  </div>
+                  <button className="text-on-surface-variant hover:text-on-surface transition-colors opacity-0 group-hover:opacity-100">
+                    <MoreVertical className="w-5 h-5" />
+                  </button>
+                </div>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="glass-card bg-surface-container/40 border-outline-variant/30 overflow-hidden relative group">
-            <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-label uppercase tracking-wider text-on-surface-variant">Total Contacts</CardTitle>
-              <div className="h-8 w-8 rounded-full bg-secondary/10 flex items-center justify-center">
-                <Users className="h-4 w-4 text-secondary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-extrabold font-headline text-on-surface">{totalContacts.toLocaleString()}</div>
-              <p className="text-xs text-on-surface-variant mt-1 font-medium">Across all campaigns</p>
-            </CardContent>
-          </Card>
-        </motion.div>
+                <h3 className="font-headline text-lg font-bold text-on-surface mb-6 group-hover:text-primary transition-colors line-clamp-2">
+                  {campaign.name}
+                </h3>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <Card className="glass-card bg-surface-container/40 border-outline-variant/30 overflow-hidden relative group">
-            <div className="absolute inset-0 bg-gradient-to-br from-tertiary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-label uppercase tracking-wider text-on-surface-variant">Messages Generated</CardTitle>
-              <div className="h-8 w-8 rounded-full bg-tertiary/10 flex items-center justify-center">
-                <MessageSquare className="h-4 w-4 text-tertiary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-extrabold font-headline text-on-surface">{totalGenerated.toLocaleString()}</div>
-              <p className="text-xs text-on-surface-variant mt-1 font-medium">AI-generated messages</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-surface-container-low/50 p-3 rounded-xl border border-white/5">
+                    <span className="block text-[10px] text-on-surface-variant uppercase tracking-tighter mb-1 font-bold">Contacts</span>
+                    <span className="font-headline font-semibold text-on-surface">{campaign.total_contacts}</span>
+                  </div>
+                  <div className="bg-surface-container-low/50 p-3 rounded-xl border border-white/5">
+                    <span className="block text-[10px] text-on-surface-variant uppercase tracking-tighter mb-1 font-bold">Messages</span>
+                    <span className="font-headline font-semibold text-on-surface">{campaign.messages_generated}</span>
+                  </div>
+                </div>
 
-      {/* Recent Campaigns */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-        <Card className="glass-card bg-surface-container/30 border-outline-variant/30">
-          <CardHeader>
-            <CardTitle className="font-headline text-xl text-on-surface">Recent Campaigns</CardTitle>
-            <CardDescription className="text-on-surface-variant">Your latest outreach workflows</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex justify-center py-12">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-              </div>
-            ) : campaigns.length === 0 ? (
-              <div className="py-12 text-center text-on-surface-variant">
-                <FolderOpen className="mx-auto mb-4 h-12 w-12 opacity-20" />
-                <p className="font-medium text-lg text-on-surface mb-1">No campaigns found</p>
-                <p className="text-sm mb-6">Create a new campaign to start generating outreach</p>
-                <Link href="/campaigns/new">
-                  <Button variant="outline" className="border-outline-variant text-on-surface hover:bg-surface-container-highest">
-                    Create your first campaign
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {campaigns.slice(0, 5).map((campaign) => (
-                  <Link
-                    key={campaign.id}
-                    href={`/campaigns/${campaign.id}`}
-                    className="group flex flex-col sm:flex-row sm:items-center justify-between rounded-xl border border-outline-variant/20 bg-surface-container-low/50 p-5 transition-all hover:bg-surface-container-highest/80 hover:border-outline-variant/50"
-                  >
-                    <div className="space-y-1.5 mb-3 sm:mb-0">
-                      <div className="flex items-center gap-3">
-                        <span className="font-bold text-on-surface font-headline">{campaign.name}</span>
-                        <Badge variant={statusColor[campaign.status]} className="font-label uppercase text-[10px] tracking-wider px-2 py-0.5">
-                          {campaign.status}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-on-surface-variant font-medium flex items-center gap-3">
-                        <span className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" /> {campaign.total_contacts}</span>
-                        <span>·</span>
-                        <span className="flex items-center gap-1.5"><MessageSquare className="h-3.5 w-3.5" /> {campaign.messages_generated}</span>
-                      </p>
+                <div className="flex items-center justify-between text-[11px] text-on-surface-variant pt-4 border-t border-white/5">
+                  <span className="font-medium">
+                    {new Date(campaign.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </span>
+                  
+                  {campaign.status === 'draft' ? (
+                    <div className="flex items-center gap-1 text-primary font-bold">
+                      <Edit2 className="w-3 h-3" />
+                      Continue
                     </div>
-                    <div className="flex items-center justify-between sm:justify-end gap-6">
-                      <span className="text-xs text-on-surface-variant/70 font-medium">
-                        {new Date(campaign.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                      </span>
-                      <div className="h-8 w-8 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary group-hover:text-background transition-colors">
-                        <ArrowRight className="h-4 w-4" />
+                  ) : (
+                    <div className="flex -space-x-2">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 border-2 border-surface-container flex items-center justify-center text-[10px] font-bold text-primary">
+                        <Users className="w-3 h-3" />
                       </div>
                     </div>
-                  </Link>
-                ))}
+                  )}
+                </div>
+              </motion.div>
+            </Link>
+          ))}
+
+          {/* Launch New Card */}
+          <Link href="/campaigns/new">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5 }}
+              className="border-2 border-dashed border-white/10 rounded-[1.5rem] p-6 flex flex-col items-center justify-center text-on-surface-variant hover:border-primary/40 hover:text-primary transition-all group cursor-pointer min-h-[280px] h-full"
+            >
+              <div className="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center mb-4 group-hover:scale-110 transition-transform group-hover:bg-primary/10">
+                <Plus className="w-8 h-8 text-on-surface-variant group-hover:text-primary transition-colors" />
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </motion.div>
+              <span className="font-headline font-bold text-lg text-on-surface group-hover:text-primary transition-colors">Launch New Sequence</span>
+              <p className="text-center text-sm mt-2 max-w-[200px] opacity-60 font-medium">
+                Leverage AI to create a personalized outreach strategy in seconds.
+              </p>
+            </motion.div>
+          </Link>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-surface w-full py-8 border-t border-white/5 mt-auto relative z-10">
+        <div className="flex flex-col md:flex-row justify-between items-center px-4 sm:px-8 max-w-7xl mx-auto w-full">
+          <div className="mb-4 md:mb-0">
+            <span className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">
+              © {new Date().getFullYear()} Auto Follow-Ups. Powered by Ethereal Intelligence.
+            </span>
+          </div>
+          <div className="flex items-center gap-6 text-[10px] uppercase tracking-widest font-bold">
+            <Link href="/" className="text-on-surface-variant hover:text-tertiary transition-colors">Privacy Policy</Link>
+            <Link href="/" className="text-on-surface-variant hover:text-tertiary transition-colors">Terms</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
