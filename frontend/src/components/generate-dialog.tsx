@@ -37,23 +37,15 @@ const MESSAGE_TYPES = [
 ];
 
 const AI_MODELS = [
-  { value: "llama-3.3-70b-versatile", label: "Llama 3.3 70B (Free)" },
-  { value: "llama-3.1-8b-instant", label: "Llama 3.1 8B (Free)" },
-  { value: "mixtral-8x7b-32768", label: "Mixtral 8x7B (Free)" },
-  { value: "gemma2-9b-it", label: "Gemma 2 9B (Free)" },
-  { value: "gpt-4o", label: "GPT-4o" },
-  { value: "gpt-4o-mini", label: "GPT-4o Mini" },
-  { value: "gpt-4-turbo", label: "GPT-4 Turbo" },
-  { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo" },
-  { value: "claude-3.5-sonnet", label: "Claude 3.5 Sonnet" },
-  { value: "claude-3.5-haiku", label: "Claude 3.5 Haiku" },
-  { value: "claude-3-opus", label: "Claude 3 Opus" },
-  { value: "claude-3-sonnet", label: "Claude 3 Sonnet" },
-  { value: "claude-3-haiku", label: "Claude 3 Haiku" },
-  { value: "deepseek-chat", label: "DeepSeek V3" },
-  { value: "deepseek-reasoner", label: "DeepSeek R1" },
-  { value: "o1-mini", label: "OpenAI o1-mini" },
-  { value: "o1-preview", label: "OpenAI o1-preview" },
+  // Groq (free, API key configured)
+  { value: "llama-3.3-70b-versatile", label: "Llama 3.3 70B (Groq · Free)" },
+  { value: "llama-3.1-8b-instant", label: "Llama 3.1 8B (Groq · Free)" },
+  { value: "mixtral-8x7b-32768", label: "Mixtral 8x7B (Groq · Free)" },
+  { value: "gemma2-9b-it", label: "Gemma 2 9B (Groq · Free)" },
+  // OpenAI (API key configured)
+  { value: "gpt-4o", label: "GPT-4o (OpenAI)" },
+  { value: "gpt-4o-mini", label: "GPT-4o Mini (OpenAI)" },
+  { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo (OpenAI)" },
 ];
 
 interface GenerateDialogProps {
