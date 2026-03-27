@@ -3,7 +3,6 @@
 import { useState } from "react";
 import {
   useGenerateMessages,
-  usePromptTemplates,
   useTaskStatus,
 } from "@/lib/hooks";
 import { toast } from "sonner";
@@ -70,15 +69,13 @@ export function GenerateDialog({
 }: GenerateDialogProps) {
   const [messageType, setMessageType] = useState("cold_outreach");
   const [model, setModel] = useState("llama-3.3-70b-versatile");
-  const [templateId, setTemplateId] = useState<string>("default");
   const [customInstructions, setCustomInstructions] = useState<string>("");
   const [taskId, setTaskId] = useState<string | null>(null);
 
-  const { data: templatesData } = usePromptTemplates(messageType);
   const generate = useGenerateMessages();
   const { data: taskStatus } = useTaskStatus(taskId);
 
-  const templates = templatesData?.templates ?? [];
+
   const isRunning = taskId !== null && taskStatus && !["SUCCESS", "FAILURE", "REVOKED"].includes(taskStatus.status);
   const isDone = taskStatus?.status === "SUCCESS";
   const isFailed = taskStatus?.status === "FAILURE";
@@ -94,7 +91,6 @@ export function GenerateDialog({
         campaign_id: campaignId,
         message_type: messageType,
         model,
-        prompt_template_id: templateId === "default" ? undefined : templateId,
         custom_instructions: customInstructions || undefined,
       });
       setTaskId(result.task_id);
@@ -115,7 +111,7 @@ export function GenerateDialog({
         <DialogHeader>
           <DialogTitle>Generate Messages</DialogTitle>
           <DialogDescription>
-            Select message type, AI model, and optionally a prompt template.
+            Select message type, AI model, and provide instructions for how the message should be generated.
           </DialogDescription>
         </DialogHeader>
 
@@ -155,33 +151,16 @@ export function GenerateDialog({
               </div>
 
               <div className="space-y-2">
-                <Label>Prompt Template</Label>
-                <Select value={templateId} onValueChange={setTemplateId}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="default">Default Template</SelectItem>
-                    {templates.map((t) => (
-                      <SelectItem key={t.id} value={t.id}>
-                        {t.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Custom Instructions (Optional)</Label>
+                <Label>Prompt Instructions</Label>
                 <Textarea 
-                  placeholder="e.g. Mention our new Series B funding round..."
+                  placeholder="e.g. Write a cold outreach message mentioning our new Series B funding. Keep it under 100 words and use a friendly tone..."
                   value={customInstructions}
                   onChange={(e) => setCustomInstructions(e.target.value)}
                   className="resize-none"
-                  rows={3}
+                  rows={4}
                 />
                 <p className="text-[11px] text-muted-foreground">
-                  Variables injected directly into the template ({"{{custom_instructions}}"})
+                  Describe how you want the AI to generate the message. Contact details are automatically included.
                 </p>
               </div>
             </div>

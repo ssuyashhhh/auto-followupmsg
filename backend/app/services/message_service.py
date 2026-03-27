@@ -23,12 +23,6 @@ from app.models.message import Message
 from app.services.ai_generator import (
     GenerationResult,
 )
-from app.services.prompt_service import (
-    build_contact_variables,
-    get_default_template_sync,
-    get_template_by_id_sync,
-    render_template,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -177,20 +171,13 @@ def build_prompts_for_contact(
 ) -> tuple[str, str, str] | None:
     """
     Build system and user prompts for a contact.
-    Returns: (system_prompt, user_prompt, template_name)
+
+    No pre-built templates are used. The system prompt is built from
+    contact context, and the user's custom_instructions become the
+    only user prompt controlling generation behavior.
+
+    Returns: (system_prompt, user_prompt, prompt_label)
     """
-    if not template:
-        if template_id:
-            template = get_template_by_id_sync(db, template_id)
-        else:
-            template = get_default_template_sync(db, message_type, user_id)
-
-    if not template:
-        logger.error(
-            "No prompt template found for type=%s user=%s", message_type, user_id
-        )
-        return None
-
     if not user:
         from app.models.user import User
 
@@ -198,23 +185,48 @@ def build_prompts_for_contact(
             select(User).where(User.id == user_id)
         ).scalar_one_or_none()
 
-    variables = build_contact_variables(
-        contact_name=contact.full_name,
-        contact_company=contact.company,
-        contact_role=contact.role,
-        contact_linkedin=contact.linkedin_url,
-        contact_email=contact.email,
-        contact_notes=contact.notes,
-        previous_message=previous_message,
-        sender_name=user.full_name if user else None,
-        sender_company=user.company if user else None,
-        custom_instructions=custom_instructions,
+    # --- Build system prompt with contact context ---
+    msg_type_label = message_type.value.replace("_", " ").title()
+
+    context_lines = [
+        f"Contact Name: {contact.full_name}",
+    ]
+    if contact.company:
+        context_lines.append(f"Company: {contact.company}")
+    if contact.role:
+        context_lines.append(f"Role: {contact.role}")
+    if contact.email:
+        context_lines.append(f"Email: {contact.email}")
+    if contact.linkedin_url:
+        context_lines.append(f"LinkedIn: {contact.linkedin_url}")
+    if contact.notes:
+        context_lines.append(f"Notes: {contact.notes}")
+    if user and getattr(user, "full_name", None):
+        context_lines.append(f"Sender Name: {user.full_name}")
+    if user and getattr(user, "company", None):
+        context_lines.append(f"Sender Company: {user.company}")
+    if previous_message:
+        context_lines.append(f"Previous Message:\n{previous_message}")
+
+    contact_block = "\n".join(context_lines)
+
+    system_prompt = (
+        f"You are a professional AI assistant that writes personalized {msg_type_label} messages.\n"
+        f"Use the following contact details to personalize the message.\n\n"
+        f"{contact_block}\n\n"
+        f"Write only the message body. Do not include a subject line unless asked. "
+        f"Keep the tone professional and concise."
     )
 
-    system_prompt = render_template(template.system_prompt, variables)
-    user_prompt = render_template(template.user_prompt, variables)
+    # --- User prompt is purely the user's instructions ---
+    if custom_instructions and custom_instructions.strip():
+        user_prompt = custom_instructions.strip()
+    else:
+        user_prompt = f"Write a professional {msg_type_label} message for this contact."
 
-    return system_prompt, user_prompt, template.name
+    prompt_label = "User Instructions"
+
+    return system_prompt, user_prompt, prompt_label
 
 
 def save_generated_message(

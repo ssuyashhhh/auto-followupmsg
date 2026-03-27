@@ -61,13 +61,8 @@ def generate_messages_for_campaign(
 
     with get_sync_db() as db:
         from app.models.user import User
-        from app.services.prompt_service import get_template_by_id_sync, get_default_template_sync
 
         user = db.execute(select(User).where(User.id == uid)).scalar_one_or_none()
-        if tmpl_id:
-            template = get_template_by_id_sync(db, tmpl_id)
-        else:
-            template = get_default_template_sync(db, msg_type, uid)
 
         contact_uuids = [uuid.UUID(cid_str) for cid_str in contact_ids]
         contacts = db.execute(
@@ -93,15 +88,13 @@ def generate_messages_for_campaign(
                     db, contact.id, msg_type
                 )
 
-            # Build prompts
+            # Build prompts (no template lookup — uses user instructions directly)
             prompts = build_prompts_for_contact(
                 db=db,
                 contact=contact,
                 user_id=uid,
                 message_type=msg_type,
-                template_id=tmpl_id,
                 previous_message=previous_message,
-                template=template,
                 user=user,
                 custom_instructions=custom_instructions,
             )
