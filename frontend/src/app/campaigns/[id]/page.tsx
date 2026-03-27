@@ -105,54 +105,54 @@ export default function CampaignDetailPage({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div className="flex items-start gap-4">
           <Link href="/campaigns">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-4 w-4" />
+            <Button variant="ghost" size="icon" className="h-10 w-10 mt-1 hover:bg-surface-container-highest rounded-full">
+              <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold">{campaign.name}</h1>
-              <Badge variant={statusColor[campaign.status]}>{campaign.status}</Badge>
+              <h1 className="text-3xl font-extrabold font-headline bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">{campaign.name}</h1>
+              <Badge variant={statusColor[campaign.status]} className="font-label uppercase tracking-wider">{campaign.status}</Badge>
             </div>
             {campaign.description && (
-              <p className="mt-1 text-muted-foreground">{campaign.description}</p>
+              <p className="mt-2 text-on-surface-variant font-medium">{campaign.description}</p>
             )}
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {campaign.status === "draft" && (
-            <Button onClick={() => handleStatusChange("active")}>Activate</Button>
+            <Button className="bg-gradient-to-r from-primary to-secondary text-background border-0 shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity font-bold rounded-full" onClick={() => handleStatusChange("active")}>Activate</Button>
           )}
           {campaign.status === "active" && (
-            <Button variant="outline" onClick={() => handleStatusChange("paused")}>
+            <Button variant="outline" className="border-outline-variant text-on-surface hover:bg-surface-container-highest rounded-full font-bold" onClick={() => handleStatusChange("paused")}>
               Pause
             </Button>
           )}
           {campaign.status === "paused" && (
-            <Button onClick={() => handleStatusChange("active")}>Resume</Button>
+            <Button className="bg-gradient-to-r from-primary to-secondary text-background border-0 shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity font-bold rounded-full" onClick={() => handleStatusChange("active")}>Resume</Button>
           )}
           <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
             <DialogTrigger asChild>
-              <Button variant="destructive" size="icon">
+              <Button variant="destructive" size="icon" className="rounded-full shadow-lg shadow-destructive/20 h-10 w-10">
                 <Trash2 className="h-4 w-4" />
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="glass-card bg-surface-container/90 border-outline-variant/30">
               <DialogHeader>
-                <DialogTitle>Delete Campaign</DialogTitle>
-                <DialogDescription>
+                <DialogTitle className="font-headline text-xl">Delete Campaign</DialogTitle>
+                <DialogDescription className="text-on-surface-variant font-medium">
                   This will permanently delete the campaign and all its data.
                   This action cannot be undone.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setDeleteOpen(false)}>
+                <Button variant="outline" className="border-outline-variant rounded-full text-on-surface hover:bg-surface-container-highest font-bold" onClick={() => setDeleteOpen(false)}>
                   Cancel
                 </Button>
-                <Button variant="destructive" onClick={handleDelete}>
+                <Button variant="destructive" className="rounded-full shadow-lg shadow-destructive/20 font-bold" onClick={handleDelete}>
                   Delete
                 </Button>
               </DialogFooter>
@@ -162,51 +162,63 @@ export default function CampaignDetailPage({
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Contacts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{campaign.total_contacts}</div>
-          </CardContent>
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card className="glass-card bg-surface-container/40 border-outline-variant/30 overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-label uppercase tracking-wider text-on-surface-variant">Contacts</CardTitle>
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <Users className="h-4 w-4 text-primary" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-extrabold font-headline text-on-surface">{campaign.total_contacts}</div>
+            </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Uploads</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{uploadsData?.total ?? 0}</div>
-          </CardContent>
+        <Card className="glass-card bg-surface-container/40 border-outline-variant/30 overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-label uppercase tracking-wider text-on-surface-variant">Uploads</CardTitle>
+              <div className="h-8 w-8 rounded-full bg-secondary/10 flex items-center justify-center">
+                <FileUp className="h-4 w-4 text-secondary" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-extrabold font-headline text-on-surface">{uploadsData?.total ?? 0}</div>
+            </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Messages Generated</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{campaign.messages_generated}</div>
-          </CardContent>
+        <Card className="glass-card bg-surface-container/40 border-outline-variant/30 overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-tertiary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-label uppercase tracking-wider text-on-surface-variant">Messages Generated</CardTitle>
+              <div className="h-8 w-8 rounded-full bg-tertiary/10 flex items-center justify-center">
+                <MessageSquare className="h-4 w-4 text-tertiary" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-extrabold font-headline text-on-surface">{campaign.messages_generated}</div>
+            </CardContent>
         </Card>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="contacts">
-        <div className="flex items-center justify-between">
-          <TabsList>
-            <TabsTrigger value="contacts" className="gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-8 mb-6 gap-4">
+          <TabsList className="bg-surface-container-highest/50 border border-outline-variant/20 h-12 rounded-xl p-1">
+            <TabsTrigger value="contacts" className="gap-2 font-label text-xs uppercase tracking-wider rounded-lg data-[state=active]:bg-primary/10 data-[state=active]:text-primary transition-all">
               <Users className="h-4 w-4" />
               Contacts
             </TabsTrigger>
-            <TabsTrigger value="messages" className="gap-2">
+            <TabsTrigger value="messages" className="gap-2 font-label text-xs uppercase tracking-wider rounded-lg data-[state=active]:bg-secondary/10 data-[state=active]:text-secondary transition-all">
               <MessageSquare className="h-4 w-4" />
               Messages
             </TabsTrigger>
-            <TabsTrigger value="uploads" className="gap-2">
+            <TabsTrigger value="uploads" className="gap-2 font-label text-xs uppercase tracking-wider rounded-lg data-[state=active]:bg-tertiary/10 data-[state=active]:text-tertiary transition-all">
               <FileUp className="h-4 w-4" />
-              Upload
+              Uploads
             </TabsTrigger>
           </TabsList>
-          <Button onClick={() => setGenerateOpen(true)}>
+          <Button onClick={() => setGenerateOpen(true)} className="bg-gradient-to-r from-primary to-secondary text-background font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity border-0 h-11 px-6 rounded-full">
             <MessageSquare className="mr-2 h-4 w-4" />
             Generate Messages
           </Button>

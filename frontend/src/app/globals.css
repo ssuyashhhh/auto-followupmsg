@@ -3,45 +3,43 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+  :root, .dark {
+    --background: 222 68% 7.5%;
+    --foreground: 227 100% 94%;
+    --card: 222 52% 12.5%;
+    --card-foreground: 227 100% 94%;
+    --popover: 222 52% 12.5%;
+    --popover-foreground: 227 100% 94%;
+    --primary: 235 100% 81.2%;
+    --primary-foreground: 222 68% 7.5%;
+    --secondary: 270 92% 75%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 222 44% 17.6%;
+    --muted-foreground: 227 26% 70.4%;
+    --accent: 222 47% 14.9%;
+    --accent-foreground: 227 100% 94%;
+    --destructive: 351 100% 71%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 223 19% 30.8%;
+    --input: 222 44% 17.6%;
+    --ring: 235 100% 81.2%;
+    --radius: 1rem;
+    
+    /* Stitch CSS custom properties mapping */
+    --color-background: #060e20;
+    --color-primary: #9fa7ff;
+    --color-primary-dim: #8a95ff;
+    --color-secondary: #be83fa;
+    --color-tertiary: #7de9ff;
+    
+    --color-on-surface: #dee5ff;
+    --color-on-surface-variant: #a3aac4;
+    
+    --color-surface-container: #0f1930;
+    --color-surface-container-highest: #192540;
+    
+    --color-outline: #6d758c;
+    --color-outline-variant: #40485d;
   }
 }
 
@@ -50,6 +48,30 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-inter), sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .font-headline {
+    font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  }
+  .font-body {
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  }
+  .font-label {
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .glass-card {
+    @apply bg-[rgba(15,25,48,0.6)] backdrop-blur-[24px];
+    border-top: 1px solid rgba(159, 167, 255, 0.2);
+    border-left: 1px solid rgba(159, 167, 255, 0.1);
+  }
+
+  .bg-glow {
+    background: radial-gradient(circle at 50% 50%, rgba(159, 167, 255, 0.08) 0%, rgba(6, 14, 32, 1) 70%);
   }
 }
