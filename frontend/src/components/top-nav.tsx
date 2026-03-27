@@ -52,63 +52,74 @@ export function TopNav() {
   ];
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-white/5 h-16 flex justify-between items-center px-4 md:px-8">
-      <div className="flex items-center gap-12">
-        <Link href="/dashboard" className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-headline tracking-tight">
-          Auto Follow-Ups
-        </Link>
-        <div className="hidden md:flex items-center gap-8 font-headline tracking-tight text-sm">
-          {links.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className={`transition-colors ${
-                pathname === link.href || pathname?.startsWith(link.href + "/")
-                  ? "text-primary border-b-2 border-primary pb-1 font-bold"
-                  : "text-on-surface-variant hover:text-on-surface"
-              }`}
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-white/5 h-16">
+      <div className="h-full max-w-[1440px] mx-auto px-4 md:px-8 flex items-center justify-between">
+        {/* Left: Logo + Nav Links */}
+        <div className="flex items-center gap-8 lg:gap-12 h-full">
+          <Link href="/dashboard" className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-headline tracking-tight whitespace-nowrap">
+            Auto Follow-Ups
+          </Link>
+          <div className="hidden md:flex items-center gap-6 h-full">
+            {links.map((link) => {
+              const isActive = pathname === link.href || pathname?.startsWith(link.href + "/");
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`relative h-full flex items-center font-headline tracking-tight text-sm transition-colors ${
+                    isActive
+                      ? "text-primary font-bold"
+                      : "text-on-surface-variant hover:text-on-surface"
+                  }`}
+                >
+                  {link.name}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Right: Search + Actions */}
+        <div className="flex items-center gap-3">
+          {/* Search */}
+          <div className="hidden lg:flex items-center bg-surface-container-highest rounded-full px-4 h-9 border border-white/5 focus-within:border-tertiary/50 transition-colors">
+            <Search className="text-on-surface-variant w-4 h-4 mr-2 flex-shrink-0" />
+            <input
+              type="text"
+              value={searchValue}
+              onChange={(e) => handleSearch(e.target.value)}
+              placeholder="Search campaigns..."
+              className="bg-transparent border-none focus:outline-none text-sm placeholder:text-on-surface-variant w-44 text-on-surface"
+            />
+            {searchValue && (
+              <button onClick={() => handleSearch("")} className="ml-1 text-on-surface-variant hover:text-on-surface transition-colors">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* New Campaign */}
+          <Link href="/campaigns/new">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="hidden sm:flex items-center bg-gradient-to-r from-primary to-secondary text-background font-headline font-bold text-sm px-5 h-9 rounded-full transition-all shadow-lg shadow-primary/20 hover:opacity-90"
             >
-              {link.name}
-            </Link>
-          ))}
-        </div>
-      </div>
+              New Campaign
+            </motion.button>
+          </Link>
 
-      <div className="flex items-center gap-4">
-        {/* ===== SEARCH ===== */}
-        <div className="hidden lg:flex items-center bg-surface-container-highest rounded-full px-4 py-1.5 border border-white/5 focus-within:border-tertiary/50 transition-colors">
-          <Search className="text-on-surface-variant w-4 h-4 mr-2 flex-shrink-0" />
-          <input
-            type="text"
-            value={searchValue}
-            onChange={(e) => handleSearch(e.target.value)}
-            placeholder="Search campaigns..."
-            className="bg-transparent border-none focus:outline-none text-sm placeholder:text-on-surface-variant w-48 text-on-surface"
-          />
-          {searchValue && (
-            <button onClick={() => handleSearch("")} className="ml-1 text-on-surface-variant hover:text-on-surface transition-colors">
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
+          {/* Divider */}
+          <div className="hidden sm:block w-px h-6 bg-white/10 mx-1" />
 
-        {/* ===== NEW CAMPAIGN ===== */}
-        <Link href="/campaigns/new">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="hidden sm:block bg-gradient-to-r from-primary to-secondary text-background font-headline font-bold text-sm px-6 py-2 rounded-full transition-all shadow-lg shadow-primary/20 hover:opacity-90"
-          >
-            New Campaign
-          </motion.button>
-        </Link>
-
-        <div className="flex items-center gap-2 border-l border-white/10 ml-2 pl-4">
-          {/* ===== NOTIFICATION BELL ===== */}
+          {/* Bell */}
           <div className="relative">
             <button
               onClick={() => setNotifOpen((v) => !v)}
-              className="p-2 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-full transition-all relative"
+              className="w-9 h-9 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-full transition-all relative"
             >
               <Bell className="w-4 h-4" />
               {(activeCampaigns.length > 0 || draftCampaigns.length > 0) && (
@@ -186,10 +197,10 @@ export function TopNav() {
             </AnimatePresence>
           </div>
 
-          {/* ===== USER DROPDOWN ===== */}
+          {/* User Avatar */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="w-8 h-8 rounded-full overflow-hidden border border-primary/20 ml-2 bg-surface-container-high flex justify-center items-center cursor-pointer hover:border-primary transition-colors">
+              <button className="w-9 h-9 rounded-full border border-primary/20 bg-surface-container-high flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
                 <span className="text-xs font-bold font-headline text-primary">
                   {user?.full_name?.charAt(0).toUpperCase() ?? "U"}
                 </span>
