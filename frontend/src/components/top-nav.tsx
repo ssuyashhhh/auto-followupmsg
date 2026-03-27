@@ -1,11 +1,13 @@
 "use client";
 
+import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Search, Bell, Settings, LogOut } from "lucide-react";
-import { motion } from "motion/react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Search, Bell, LogOut, X } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 
 import { useAuthStore } from "@/stores/auth";
+import { useCampaigns } from "@/lib/hooks";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +17,34 @@ import {
 
 export function TopNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, logout } = useAuthStore();
+
+  const [searchValue, setSearchValue] = useState(searchParams?.get("q") ?? "");
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  // Live search – navigates to /dashboard?q=...
+  const handleSearch = useCallback(
+    (value: string) => {
+      setSearchValue(value);
+      const params = new URLSearchParams();
+      if (value.trim()) params.set("q", value.trim());
+      router.push(`/dashboard${params.toString() ? `?${params}` : ""}`);
+    },
+    [router]
+  );
+
+  // Keep local state in sync when the URL changes externally
+  useEffect(() => {
+    setSearchValue(searchParams?.get("q") ?? "");
+  }, [searchParams]);
+
+  // --- Notification data (derived from campaigns) ---
+  const { data } = useCampaigns();
+  const campaigns = data?.campaigns ?? [];
+  const activeCampaigns = campaigns.filter((c) => c.status === "active");
+  const draftCampaigns = campaigns.filter((c) => c.status === "draft");
 
   const links = [
     { name: "Dashboard", href: "/dashboard" },
@@ -46,14 +75,24 @@ export function TopNav() {
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="hidden lg:flex items-center bg-surface-container-highest rounded-full px-4 py-1.5 border border-white/5">
-          <Search className="text-on-surface-variant w-4 h-4 mr-2" />
+        {/* ===== SEARCH ===== */}
+        <div className="hidden lg:flex items-center bg-surface-container-highest rounded-full px-4 py-1.5 border border-white/5 focus-within:border-tertiary/50 transition-colors">
+          <Search className="text-on-surface-variant w-4 h-4 mr-2 flex-shrink-0" />
           <input
             type="text"
+            value={searchValue}
+            onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search campaigns..."
             className="bg-transparent border-none focus:outline-none text-sm placeholder:text-on-surface-variant w-48 text-on-surface"
           />
+          {searchValue && (
+            <button onClick={() => handleSearch("")} className="ml-1 text-on-surface-variant hover:text-on-surface transition-colors">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
+
+        {/* ===== NEW CAMPAIGN ===== */}
         <Link href="/campaigns/new">
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -63,11 +102,91 @@ export function TopNav() {
             New Campaign
           </motion.button>
         </Link>
+
         <div className="flex items-center gap-2 border-l border-white/10 ml-2 pl-4">
-          <button className="p-2 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-full transition-all">
-            <Bell className="w-4 h-4" />
-          </button>
-          
+          {/* ===== NOTIFICATION BELL ===== */}
+          <div className="relative">
+            <button
+              onClick={() => setNotifOpen((v) => !v)}
+              className="p-2 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-full transition-all relative"
+            >
+              <Bell className="w-4 h-4" />
+              {(activeCampaigns.length > 0 || draftCampaigns.length > 0) && (
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-secondary animate-pulse" />
+              )}
+            </button>
+            <AnimatePresence>
+              {notifOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-12 w-80 glass-card border border-white/10 bg-surface-container/95 rounded-2xl shadow-2xl shadow-primary/10 p-0 overflow-hidden z-50"
+                >
+                  <div className="px-4 pt-4 pb-2 border-b border-white/5">
+                    <h4 className="font-headline font-bold text-sm text-on-surface">Activity</h4>
+                  </div>
+                  <div className="max-h-64 overflow-y-auto">
+                    {campaigns.length === 0 ? (
+                      <p className="text-on-surface-variant text-xs p-4 text-center">No campaigns yet. Create one to get started!</p>
+                    ) : (
+                      <ul className="divide-y divide-white/5">
+                        {activeCampaigns.length > 0 && (
+                          <li className="px-4 py-3 flex items-start gap-3">
+                            <span className="mt-0.5 w-2 h-2 rounded-full bg-secondary flex-shrink-0 animate-pulse" />
+                            <div>
+                              <p className="text-xs text-on-surface font-medium">
+                                <span className="text-secondary font-bold">{activeCampaigns.length}</span> active campaign{activeCampaigns.length > 1 ? "s" : ""} running
+                              </p>
+                              <p className="text-[11px] text-on-surface-variant mt-0.5">
+                                {activeCampaigns.map((c) => c.name).join(", ")}
+                              </p>
+                            </div>
+                          </li>
+                        )}
+                        {draftCampaigns.length > 0 && (
+                          <li className="px-4 py-3 flex items-start gap-3">
+                            <span className="mt-0.5 w-2 h-2 rounded-full bg-on-surface-variant flex-shrink-0" />
+                            <div>
+                              <p className="text-xs text-on-surface font-medium">
+                                <span className="font-bold">{draftCampaigns.length}</span> draft{draftCampaigns.length > 1 ? "s" : ""} pending activation
+                              </p>
+                              <p className="text-[11px] text-on-surface-variant mt-0.5">
+                                {draftCampaigns.map((c) => c.name).join(", ")}
+                              </p>
+                            </div>
+                          </li>
+                        )}
+                        <li className="px-4 py-3 flex items-start gap-3">
+                          <span className="mt-0.5 w-2 h-2 rounded-full bg-tertiary flex-shrink-0" />
+                          <div>
+                            <p className="text-xs text-on-surface font-medium">
+                              <span className="text-tertiary font-bold">{campaigns.reduce((s, c) => s + c.messages_generated, 0).toLocaleString()}</span> messages generated total
+                            </p>
+                            <p className="text-[11px] text-on-surface-variant mt-0.5">
+                              Across {campaigns.length} campaign{campaigns.length > 1 ? "s" : ""}
+                            </p>
+                          </div>
+                        </li>
+                      </ul>
+                    )}
+                  </div>
+                  <div className="p-3 border-t border-white/5">
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setNotifOpen(false)}
+                      className="block text-center text-xs text-primary font-bold hover:underline"
+                    >
+                      View Dashboard →
+                    </Link>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* ===== USER DROPDOWN ===== */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="w-8 h-8 rounded-full overflow-hidden border border-primary/20 ml-2 bg-surface-container-high flex justify-center items-center cursor-pointer hover:border-primary transition-colors">
@@ -92,10 +211,6 @@ export function TopNav() {
                 </div>
               </div>
               <div className="h-px bg-white/10 my-1" />
-              <DropdownMenuItem className="cursor-pointer text-on-surface-variant hover:text-on-surface focus:bg-surface-container-highest focus:text-on-surface">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer text-destructive hover:text-destructive focus:bg-destructive/10 focus:text-destructive"
                 onClick={() => logout()}
