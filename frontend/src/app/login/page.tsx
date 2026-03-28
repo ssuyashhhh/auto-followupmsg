@@ -46,17 +46,25 @@ export default function LoginPage() {
   return (
     <div className="flex-grow flex items-center justify-center w-full min-h-screen px-4 pt-10 pb-20 relative overflow-hidden">
       {/* 3D Background Asset */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-20 pointer-events-none mix-blend-screen -z-10 select-none">
+      <motion.div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-20 pointer-events-none mix-blend-screen -z-10 select-none"
+        animate={{ rotate: [0, 5, -5, 0], scale: [1, 1.05, 1] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+      >
          <img src="/3d-assets/brain.png" alt="AI Brain" className="w-full h-full object-contain" />
-      </div>
+      </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="w-full max-w-md"
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="w-full max-w-md perspective-1000"
       >
-        <div className="glass-card p-8 md:p-10 rounded-[2rem] shadow-2xl relative overflow-hidden">
+        <motion.div
+          animate={{ y: [0, -10, 0], rotateX: [0, 2, 0], rotateY: [0, -2, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          className="glass-card p-8 md:p-10 rounded-[2rem] shadow-2xl relative overflow-hidden preserve-3d"
+        >
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 blur-3xl rounded-full pointer-events-none" />
           
           <div className="relative z-10">
@@ -135,7 +143,7 @@ export default function LoginPage() {
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0 }}

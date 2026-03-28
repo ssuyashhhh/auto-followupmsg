@@ -207,7 +207,7 @@ export default function CampaignDetailPage({
       {/* Tabs */}
       <Tabs defaultValue="contacts">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-8 mb-6 gap-4">
-          <TabsList className="bg-surface-container-highest/50 border border-outline-variant/20 h-12 rounded-xl p-1">
+          <TabsList className="bg-surface-container-highest/50 border border-outline-variant/20 h-14 sm:h-12 rounded-xl p-1 flex overflow-x-auto w-full justify-start sm:w-auto scrollbar-hide">
             <TabsTrigger value="contacts" className="gap-2 font-label text-xs uppercase tracking-wider rounded-lg data-[state=active]:bg-primary/10 data-[state=active]:text-primary transition-all">
               <Users className="h-4 w-4" />
               Contacts

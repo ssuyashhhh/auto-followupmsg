@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useCampaigns, useUpdateCampaign, useDeleteCampaign } from "@/lib/hooks";
 import { Badge } from "@/components/ui/badge";
 import { TopNav } from "@/components/top-nav";
+import { TiltCard } from "@/components/ui/tilt-card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -108,30 +109,32 @@ export default function DashboardPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
-              className="glass-card p-6 rounded-[1.5rem] flex items-center justify-between group overflow-hidden relative"
+              className="h-full"
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${
-                stat.color === 'primary' ? 'from-primary/5' :
-                stat.color === 'secondary' ? 'from-secondary/5' :
-                'from-tertiary/5'
-              } to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-              <div className="relative z-10">
-                <span className="text-[10px] text-on-surface-variant uppercase tracking-widest block mb-1 font-bold">
-                  {stat.label}
-                </span>
-                <span className="font-headline text-3xl font-bold text-on-surface tracking-tight">
-                  {stat.value}
-                </span>
-              </div>
-              <div className={`relative z-10 w-12 h-12 rounded-[1rem] flex items-center justify-center ${
-                stat.color === 'primary' ? 'bg-primary/10 text-primary' :
-                stat.color === 'secondary' ? 'bg-secondary/10 text-secondary' :
-                'bg-tertiary/10 text-tertiary'
-              }`}>
-                {stat.icon === 'campaign' && <LayoutDashboard className="w-6 h-6" />}
-                {stat.icon === 'groups' && <Users className="w-6 h-6" />}
-                {stat.icon === 'auto_awesome' && <Sparkles className="w-6 h-6" />}
-              </div>
+              <TiltCard className="glass-card p-6 rounded-[1.5rem] flex items-center justify-between group overflow-hidden relative h-full w-full">
+                <div className={`absolute inset-0 bg-gradient-to-br ${
+                  stat.color === 'primary' ? 'from-primary/5' :
+                  stat.color === 'secondary' ? 'from-secondary/5' :
+                  'from-tertiary/5'
+                } to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                <div className="relative z-10">
+                  <span className="text-[10px] text-on-surface-variant uppercase tracking-widest block mb-1 font-bold">
+                    {stat.label}
+                  </span>
+                  <span className="font-headline text-3xl font-bold text-on-surface tracking-tight" style={{ transform: "translateZ(40px)" }}>
+                    {stat.value}
+                  </span>
+                </div>
+                <div className={`relative z-10 w-12 h-12 rounded-[1rem] flex items-center justify-center ${
+                  stat.color === 'primary' ? 'bg-primary/10 text-primary' :
+                  stat.color === 'secondary' ? 'bg-secondary/10 text-secondary' :
+                  'bg-tertiary/10 text-tertiary'
+                }`} style={{ transform: "translateZ(20px)" }}>
+                  {stat.icon === 'campaign' && <LayoutDashboard className="w-6 h-6" />}
+                  {stat.icon === 'groups' && <Users className="w-6 h-6" />}
+                  {stat.icon === 'auto_awesome' && <Sparkles className="w-6 h-6" />}
+                </div>
+              </TiltCard>
             </motion.div>
           ))}
         </div>
@@ -169,115 +172,113 @@ export default function DashboardPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3 + idx * 0.05 }}
-              className="glass-card rounded-[1.5rem] p-6 hover:bg-surface-container-highest/40 transition-all duration-300 group cursor-pointer h-full border border-white/5 hover:border-white/10 relative"
+              className="h-full"
             >
-              <div className="flex justify-between items-start mb-6">
-                <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
-                  campaign.status === 'active' ? 'bg-secondary/10 text-secondary' :
-                  campaign.status === 'completed' ? 'bg-tertiary/10 text-tertiary' :
-                  'bg-surface-container-highest text-on-surface-variant'
-                }`}>
-                  {campaign.status === 'active' && <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />}
-                  {campaign.status}
+              <TiltCard className="glass-card rounded-[1.5rem] p-6 hover:bg-surface-container-highest/40 transition-all duration-300 group cursor-pointer h-full border border-white/5 hover:border-white/10 relative w-full">
+                <div className="flex justify-between items-start mb-6">
+                  <div style={{ transform: "translateZ(20px)" }} className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                    campaign.status === 'active' ? 'bg-secondary/10 text-secondary' :
+                    campaign.status === 'completed' ? 'bg-tertiary/10 text-tertiary' :
+                    'bg-surface-container-highest text-on-surface-variant'
+                  }`}>
+                    {campaign.status === 'active' && <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />}
+                    {campaign.status}
+                  </div>
+
+                  {/* ===== CAMPAIGN CARD ACTIONS ===== */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className="text-on-surface-variant hover:text-on-surface transition-colors opacity-0 group-hover:opacity-100 z-50 relative"
+                        style={{ transform: "translateZ(30px)" }}
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        <MoreVertical className="w-5 h-5" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-44 glass-card border-white/10 bg-surface-container/95 z-50">
+                      <DropdownMenuItem className="cursor-pointer text-on-surface-variant hover:text-on-surface focus:bg-surface-container-highest focus:text-on-surface" onClick={(e) => { e.stopPropagation(); router.push(`/campaigns/${campaign.id}`); }}>
+                        <Eye className="mr-2 h-4 w-4" />
+                        <span>View Details</span>
+                      </DropdownMenuItem>
+                      {campaign.status === "draft" && (
+                        <DropdownMenuItem className="cursor-pointer text-secondary focus:bg-secondary/10 focus:text-secondary" onClick={(e) => { e.stopPropagation(); handleStatusChange(campaign.id, "active"); }}>
+                          <Play className="mr-2 h-4 w-4" />
+                          <span>Activate</span>
+                        </DropdownMenuItem>
+                      )}
+                      {campaign.status === "active" && (
+                        <DropdownMenuItem className="cursor-pointer text-on-surface-variant focus:bg-surface-container-highest focus:text-on-surface" onClick={(e) => { e.stopPropagation(); handleStatusChange(campaign.id, "paused"); }}>
+                          <Pause className="mr-2 h-4 w-4" />
+                          <span>Pause</span>
+                        </DropdownMenuItem>
+                      )}
+                      {campaign.status === "paused" && (
+                        <DropdownMenuItem className="cursor-pointer text-secondary focus:bg-secondary/10 focus:text-secondary" onClick={(e) => { e.stopPropagation(); handleStatusChange(campaign.id, "active"); }}>
+                          <Play className="mr-2 h-4 w-4" />
+                          <span>Resume</span>
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem
+                        className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
+                        onClick={(e) => { e.stopPropagation(); setDeleteTarget({ id: campaign.id, name: campaign.name }); }}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
 
-                {/* ===== CAMPAIGN CARD ACTIONS ===== */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      className="text-on-surface-variant hover:text-on-surface transition-colors opacity-0 group-hover:opacity-100"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      <MoreVertical className="w-5 h-5" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-44 glass-card border-white/10 bg-surface-container/95">
-                    <DropdownMenuItem className="cursor-pointer text-on-surface-variant hover:text-on-surface focus:bg-surface-container-highest focus:text-on-surface" onClick={() => router.push(`/campaigns/${campaign.id}`)}>
-                      <Eye className="mr-2 h-4 w-4" />
-                      <span>View Details</span>
-                    </DropdownMenuItem>
-                    {campaign.status === "draft" && (
-                      <DropdownMenuItem className="cursor-pointer text-secondary focus:bg-secondary/10 focus:text-secondary" onClick={() => handleStatusChange(campaign.id, "active")}>
-                        <Play className="mr-2 h-4 w-4" />
-                        <span>Activate</span>
-                      </DropdownMenuItem>
-                    )}
-                    {campaign.status === "active" && (
-                      <DropdownMenuItem className="cursor-pointer text-on-surface-variant focus:bg-surface-container-highest focus:text-on-surface" onClick={() => handleStatusChange(campaign.id, "paused")}>
-                        <Pause className="mr-2 h-4 w-4" />
-                        <span>Pause</span>
-                      </DropdownMenuItem>
-                    )}
-                    {campaign.status === "paused" && (
-                      <DropdownMenuItem className="cursor-pointer text-secondary focus:bg-secondary/10 focus:text-secondary" onClick={() => handleStatusChange(campaign.id, "active")}>
-                        <Play className="mr-2 h-4 w-4" />
-                        <span>Resume</span>
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuItem
-                      className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
-                      onClick={() => setDeleteTarget({ id: campaign.id, name: campaign.name })}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      <span>Delete</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+                <Link href={`/campaigns/${campaign.id}`} className="block relative z-10 w-full h-full">
+                  <h3 className="font-headline text-lg font-bold text-on-surface mb-6 group-hover:text-primary transition-colors line-clamp-2" style={{ transform: "translateZ(40px)" }}>
+                    {campaign.name}
+                  </h3>
 
-              <Link href={`/campaigns/${campaign.id}`}>
-                <h3 className="font-headline text-lg font-bold text-on-surface mb-6 group-hover:text-primary transition-colors line-clamp-2">
-                  {campaign.name}
-                </h3>
-
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-surface-container-low/50 p-3 rounded-xl border border-white/5">
-                    <span className="block text-[10px] text-on-surface-variant uppercase tracking-tighter mb-1 font-bold">Contacts</span>
-                    <span className="font-headline font-semibold text-on-surface">{campaign.total_contacts}</span>
-                  </div>
-                  <div className="bg-surface-container-low/50 p-3 rounded-xl border border-white/5">
-                    <span className="block text-[10px] text-on-surface-variant uppercase tracking-tighter mb-1 font-bold">Messages</span>
-                    <span className="font-headline font-semibold text-on-surface">{campaign.messages_generated}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-[11px] text-on-surface-variant pt-4 border-t border-white/5">
-                  <span className="font-medium">
-                    {new Date(campaign.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                  </span>
-                  
-                  {campaign.status === 'draft' ? (
-                    <div className="flex items-center gap-1 text-primary font-bold">
-                      <Edit2 className="w-3 h-3" />
-                      Continue
+                  <div className="grid grid-cols-2 gap-4 mb-6" style={{ transform: "translateZ(10px)" }}>
+                    <div className="bg-surface-container-low/50 p-3 rounded-xl border border-white/5">
+                      <span className="block text-[10px] text-on-surface-variant uppercase tracking-tighter mb-1 font-bold">Contacts</span>
+                      <span className="font-headline font-semibold text-on-surface">{campaign.total_contacts}</span>
                     </div>
-                  ) : (
-                    <div className="flex -space-x-2">
-                      <div className="w-6 h-6 rounded-full bg-primary/20 border-2 border-surface-container flex items-center justify-center text-[10px] font-bold text-primary">
-                        <Users className="w-3 h-3" />
+                    <div className="bg-surface-container-low/50 p-3 rounded-xl border border-white/5">
+                      <span className="block text-[10px] text-on-surface-variant uppercase tracking-tighter mb-1 font-bold">Messages</span>
+                      <span className="font-headline font-semibold text-on-surface">{campaign.messages_generated}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-on-surface-variant pt-4 border-t border-white/5" style={{ transform: "translateZ(5px)" }}>
+                    <span className="font-medium">
+                      {new Date(campaign.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+                    
+                    {campaign.status === 'draft' ? (
+                      <div className="flex items-center gap-1 text-primary font-bold">
+                        <Edit2 className="w-3 h-3" />
+                        Continue
                       </div>
-                    </div>
-                  )}
-                </div>
-              </Link>
+                    ) : (
+                      <div className="flex -space-x-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/20 border-2 border-surface-container flex items-center justify-center text-[10px] font-bold text-primary">
+                          <Users className="w-3 h-3" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              </TiltCard>
             </motion.div>
           ))}
 
           {/* Launch New Card */}
           {!searchQuery && (
-            <Link href="/campaigns/new">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 }}
-                className="border-2 border-dashed border-white/10 rounded-[1.5rem] p-6 flex flex-col items-center justify-center text-on-surface-variant hover:border-primary/40 hover:text-primary transition-all group cursor-pointer min-h-[280px] h-full relative overflow-hidden"
-              >
+            <Link href="/campaigns/new" className="h-full w-full block">
+              <TiltCard className="border-2 border-dashed border-white/10 rounded-[1.5rem] p-6 flex flex-col items-center justify-center text-on-surface-variant hover:border-primary/40 hover:text-primary transition-all group cursor-pointer min-h-[280px] h-full relative overflow-hidden w-full">
                 {/* 3D Asset Background */}
-                <div className="absolute inset-0 z-0 opacity-20 group-hover:opacity-40 transition-opacity duration-500">
-                  <img src="/3d-assets/plane.png" alt="3D Plane" className="w-full h-full object-cover mix-blend-screen scale-110 group-hover:scale-105 transition-transform duration-700" />
+                <div className="absolute inset-0 z-0 opacity-20 group-hover:opacity-40 transition-opacity duration-500 pointer-events-none" style={{ transform: "translateZ(-20px)" }}>
+                  <img src="/3d-assets/plane.png" alt="3D Plane" className="w-[120%] h-[120%] -ml-[10%] -mt-[10%] object-cover mix-blend-screen scale-110 group-hover:scale-105 transition-transform duration-700" />
                 </div>
                 
-                <div className="relative z-10 flex flex-col items-center">
+                <div className="relative z-10 flex flex-col items-center" style={{ transform: "translateZ(40px)" }}>
                   <div className="w-14 h-14 rounded-full bg-surface-container-high/80 backdrop-blur-md flex items-center justify-center mb-4 group-hover:scale-110 transition-transform group-hover:bg-primary/20 shadow-xl">
                     <Plus className="w-8 h-8 text-on-surface-variant group-hover:text-primary transition-colors" />
                   </div>
@@ -286,7 +287,7 @@ export default function DashboardPage() {
                     Leverage AI to create a personalized outreach strategy in seconds.
                   </p>
                 </div>
-              </motion.div>
+              </TiltCard>
             </Link>
           )}
         </div>

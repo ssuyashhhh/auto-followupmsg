@@ -74,4 +74,20 @@
   .bg-glow {
     background: radial-gradient(circle at 50% 50%, rgba(159, 167, 255, 0.08) 0%, rgba(6, 14, 32, 1) 70%);
   }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 }

@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Search, Bell, LogOut, X } from "lucide-react";
+import { Search, Bell, LogOut, X, Menu, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 import { useAuthStore } from "@/stores/auth";
@@ -55,9 +55,35 @@ export function TopNav() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-white/5 h-16">
       <div className="h-full max-w-[1440px] mx-auto px-4 md:px-8 flex items-center justify-between">
         {/* Left: Logo + Nav Links */}
-        <div className="flex items-center gap-8 lg:gap-12 h-full">
-          <Link href="/dashboard" className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-headline tracking-tight whitespace-nowrap">
+        <div className="flex items-center gap-4 lg:gap-12 h-full">
+
+          {/* Mobile Menu Toggle */}
+          <div className="md:hidden flex items-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="w-9 h-9 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-full transition-all outline-none">
+                  <Menu className="w-5 h-5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48 glass-card border-white/10 bg-surface-container/95 mt-2 z-50">
+                {links.map(link => (
+                  <DropdownMenuItem key={link.href} className="text-on-surface-variant focus:bg-surface-container-highest focus:text-on-surface cursor-pointer" onClick={() => router.push(link.href)}>
+                    {link.name}
+                  </DropdownMenuItem>
+                ))}
+                <div className="h-px bg-white/10 my-1" />
+                <DropdownMenuItem className="text-secondary font-bold focus:bg-secondary/10 focus:text-secondary cursor-pointer" onClick={() => router.push("/campaigns/new")}>
+                  <Plus className="w-4 h-4 mr-2" /> New Campaign
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          <Link href="/dashboard" className="hidden sm:block text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-headline tracking-tight whitespace-nowrap">
             Auto Follow-Ups
+          </Link>
+          <Link href="/dashboard" className="sm:hidden text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-headline tracking-tight whitespace-nowrap">
+            AFU
           </Link>
           <div className="hidden md:flex items-center gap-6 h-full">
             {links.map((link) => {
