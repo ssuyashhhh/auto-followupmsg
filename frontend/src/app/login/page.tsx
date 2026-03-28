@@ -44,7 +44,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex-grow flex items-center justify-center w-full min-h-screen px-4 pt-10 pb-20">
+    <div className="flex-grow flex items-center justify-center w-full min-h-screen px-4 pt-10 pb-20 relative overflow-hidden">
+      {/* 3D Background Asset */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-20 pointer-events-none mix-blend-screen -z-10 select-none">
+         <img src="/3d-assets/brain.png" alt="AI Brain" className="w-full h-full object-contain" />
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

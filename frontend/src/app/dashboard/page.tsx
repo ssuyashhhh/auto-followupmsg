@@ -270,15 +270,22 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5 }}
-                className="border-2 border-dashed border-white/10 rounded-[1.5rem] p-6 flex flex-col items-center justify-center text-on-surface-variant hover:border-primary/40 hover:text-primary transition-all group cursor-pointer min-h-[280px] h-full"
+                className="border-2 border-dashed border-white/10 rounded-[1.5rem] p-6 flex flex-col items-center justify-center text-on-surface-variant hover:border-primary/40 hover:text-primary transition-all group cursor-pointer min-h-[280px] h-full relative overflow-hidden"
               >
-                <div className="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center mb-4 group-hover:scale-110 transition-transform group-hover:bg-primary/10">
-                  <Plus className="w-8 h-8 text-on-surface-variant group-hover:text-primary transition-colors" />
+                {/* 3D Asset Background */}
+                <div className="absolute inset-0 z-0 opacity-20 group-hover:opacity-40 transition-opacity duration-500">
+                  <img src="/3d-assets/plane.png" alt="3D Plane" className="w-full h-full object-cover mix-blend-screen scale-110 group-hover:scale-105 transition-transform duration-700" />
                 </div>
-                <span className="font-headline font-bold text-lg text-on-surface group-hover:text-primary transition-colors">Launch New Sequence</span>
-                <p className="text-center text-sm mt-2 max-w-[200px] opacity-60 font-medium">
-                  Leverage AI to create a personalized outreach strategy in seconds.
-                </p>
+                
+                <div className="relative z-10 flex flex-col items-center">
+                  <div className="w-14 h-14 rounded-full bg-surface-container-high/80 backdrop-blur-md flex items-center justify-center mb-4 group-hover:scale-110 transition-transform group-hover:bg-primary/20 shadow-xl">
+                    <Plus className="w-8 h-8 text-on-surface-variant group-hover:text-primary transition-colors" />
+                  </div>
+                  <span className="font-headline font-bold text-lg text-on-surface group-hover:text-primary transition-colors drop-shadow-md">Launch New Sequence</span>
+                  <p className="text-center text-sm mt-2 max-w-[200px] text-on-surface drop-shadow-md">
+                    Leverage AI to create a personalized outreach strategy in seconds.
+                  </p>
+                </div>
               </motion.div>
             </Link>
           )}

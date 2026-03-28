@@ -45,7 +45,12 @@ export default function NewCampaignPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      {/* 3D Background Asset */}
+      <div className="fixed top-1/2 left-[80%] -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] opacity-15 pointer-events-none mix-blend-screen -z-10 select-none">
+        <img src="/3d-assets/spheres.png" alt="3D Spheres" className="w-full h-full object-contain" />
+      </div>
+
       <TopNav />
       <main className="flex-1 pt-32 pb-20 px-4 sm:px-8 max-w-7xl mx-auto w-full relative">
         <div className="mx-auto max-w-2xl space-y-6">
